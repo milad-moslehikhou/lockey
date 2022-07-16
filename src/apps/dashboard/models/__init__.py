@@ -1,4 +1,2 @@
-from .tenant import Tenant
-from .group import Group
-from .user import User
+from .group import GroupType
 from .user_profile import UserProfile
