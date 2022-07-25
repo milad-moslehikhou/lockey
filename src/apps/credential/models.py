@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import Group, User
 from django.utils.translation import gettext_lazy as _
 
-from .team import Team
+from apps.team.models import Team
 
 
 class CredentialCategory(models.Model):
@@ -61,18 +61,19 @@ class Credential(models.Model):
         permissions = (
             ("add_public_credential", "Can add public credential"),
         )
+        ordering = ['-id']
 
     class Importancy(models.TextChoices):
         HIGH = 'HIGH', _("High")
         MEDUIM = 'MEDUIM', _("Meduim")
         LOW = 'LOW', _("Low")
 
-    username = models.CharField(
-        verbose_name=_("username"),
+    name = models.CharField(
+        verbose_name=_("name"),
         max_length=150
     )
-    hostname = models.CharField(
-        verbose_name=_("hostname"),
+    username = models.CharField(
+        verbose_name=_("username"),
         max_length=150
     )
     ip = models.CharField(
@@ -142,6 +143,9 @@ class Credential(models.Model):
         Team,
         on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        return f'{self.username}@{self.name}'
 
 
 class CredentialSecret(models.Model):
