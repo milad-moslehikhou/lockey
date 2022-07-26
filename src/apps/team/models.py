@@ -4,9 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Team(models.Model):
-    class Meta:
-        ordering = ['-id']
-
     name = models.CharField(
         verbose_name=_('name'),
         max_length=150

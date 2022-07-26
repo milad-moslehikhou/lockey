@@ -1,8 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
 from apps.team.models import Team
+from apps.user.models import User
 
 
 class CredentialCategory(models.Model):
@@ -61,7 +62,6 @@ class Credential(models.Model):
         permissions = (
             ("add_public_credential", "Can add public credential"),
         )
-        ordering = ['-id']
 
     class Importancy(models.TextChoices):
         HIGH = 'HIGH', _("High")
@@ -226,7 +226,7 @@ class CredentialGrant(models.Model):
     )
 
 
-class CredetialShare(models.Model):
+class CredentialShare(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -243,6 +243,11 @@ class CredetialShare(models.Model):
             )
         ]
 
+    credential = models.ForeignKey(
+        Credential,
+        on_delete=models.CASCADE,
+        related_name="credentials",
+    )
     shared_by = models.ForeignKey(
         User,
         db_column="shared_by",

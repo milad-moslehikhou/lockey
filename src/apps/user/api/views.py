@@ -1,20 +1,14 @@
-from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+
+from apps.user import models
+from apps.user.api import serializers
+from apps.utils.permissions import IsSupperUser
 
 
-class UsersView(APIView):
-    def get(self, request, *args, **kwargs):
-        pass
-
-    def post(self, request, *args, **kwargs):
-        pass
-
-
-class UserView(APIView):
-    def get(self, request, pk, *args, **kwargs):
-        pass
-
-    def patch(self, request, pk, *args, **kwargs):
-        pass
-
-    def delete(self, request, pk, *args, **kwargs):
-        pass
+class UserViewSet(ModelViewSet):
+    queryset = models.User.objects.all()
+    serializer_class = serializers.UserSerializer
+    filterset_fields = ['username']
+    permission_classes = [
+        IsSupperUser
+    ]

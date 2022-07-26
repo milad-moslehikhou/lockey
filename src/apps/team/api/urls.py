@@ -1,9 +1,9 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
 
-from .views import TeamsView, TeamView
+from .views import TeamViewSet
 
 app_name = 'teams'
-urlpatterns = [
-    path('', TeamsView.as_view()),
-    path('<int:pk>/', TeamView.as_view())
-]
+router = DefaultRouter()
+router.include_root_view = False
+router.register('', TeamViewSet, basename='team')
+urlpatterns = router.urls

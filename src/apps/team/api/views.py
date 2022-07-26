@@ -1,20 +1,19 @@
-from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+
+from apps.team import models
+from apps.team.api import serializers
+from apps.utils.permissions import IsSupperUser
 
 
-class TeamsView(APIView):
-    def get(self, request, *args, **kwargs):
-        pass
+class TeamViewSet(ModelViewSet):
+    queryset = models.Team.objects.all()
+    serializer_class = serializers.TeamSerializer
 
-    def post(self, request, *args, **kwargs):
-        pass
+    filterset_fields = ['groups']
+    search_fields = ['name']
+    ordering_fields = ['id', 'name']
+    ordering = ['-id']
 
-
-class TeamView(APIView):
-    def get(self, request, pk, *args, **kwargs):
-        pass
-
-    def patch(self, request, pk, *args, **kwargs):
-        pass
-
-    def delete(self, request, pk, *args, **kwargs):
-        pass
+    permission_classes = [
+        IsSupperUser
+    ]

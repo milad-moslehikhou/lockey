@@ -2,11 +2,15 @@ asgiref==3.5.2
 autopep8==1.6.0
 backports.zoneinfo==0.2.1
 Django==4.0.6
+django-filter==22.1
+djangorestframework==3.13.1
 flake8==4.0.1
 mccabe==0.6.1
 Pillow==9.2.0
 pycodestyle==2.8.0
 pyflakes==2.4.0
+pytz==2022.1
+six==1.16.0
 sqlparse==0.4.2
 toml==0.10.2
 tzdata==2022.1
