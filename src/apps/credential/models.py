@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
+from django_cryptography.fields import encrypt 
+
 from apps.team.models import Team
 from apps.user.models import User
 
@@ -149,9 +151,11 @@ class Credential(models.Model):
 
 
 class CredentialSecret(models.Model):
-    password = models.CharField(
-        verbose_name=_("password"),
-        max_length=150
+    password = encrypt(
+        models.CharField(
+            verbose_name=_("password"),
+            max_length=150
+        )
     )
     expire_at = models.DateTimeField(
         verbose_name=_("expire at")
