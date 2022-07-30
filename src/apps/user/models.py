@@ -5,9 +5,11 @@ from django.contrib.auth.models import (
 )
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
+from apps.team.models import Team
+
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, password=None):
+    def create(self, username, password=None):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -24,7 +26,7 @@ class UserManager(BaseUserManager):
         Create and save a user with the given username, email, and password.
         """
         username = User.normalize_username(username)
-        user = self.create_user(username=username, password=password)
+        user = self.create(username=username, password=password)
         user.is_superuser = True
         user.save(using=self._db)
         return user
@@ -70,6 +72,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(
         verbose_name=_("date joined"),
         auto_now_add=True
+    )
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+        related_name="team",
+        null=True
     )
 
     objects = UserManager()

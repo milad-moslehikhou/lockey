@@ -3,12 +3,6 @@ from rest_framework import serializers
 from apps.credential import models
 
 
-class CredentialCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.CredentialCategory
-        fields = '__all__'
-
-
 class CredentialSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Credential

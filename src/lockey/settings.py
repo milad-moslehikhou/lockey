@@ -40,8 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django_filters',
     'rest_framework',
+    'rest_framework.authtoken',
+    'apps.whitelist',
     'apps.user',
     'apps.team',
+    'apps.folder',
     'apps.credential',
     'apps.dashboard',
 ]
@@ -142,15 +145,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
     'PAGE_SIZE': 25
 }
 
+APPEND_SLASH=False
 
 APPLICATION = {
 

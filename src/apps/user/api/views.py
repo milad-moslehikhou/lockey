@@ -1,13 +1,13 @@
 from rest_framework.viewsets import ModelViewSet
 
-from apps.user import models
-from apps.user.api import serializers
+from ..models import User
+from .serializers import UserSerializer
 from apps.utils.permissions import IsSupperUser
 
 
 class UserViewSet(ModelViewSet):
-    queryset = models.User.objects.all()
-    serializer_class = serializers.UserSerializer
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     filterset_fields = ['username']
     permission_classes = [
         IsSupperUser

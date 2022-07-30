@@ -2,61 +2,11 @@ from django.db import models
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
-from django_cryptography.fields import encrypt 
+from django_cryptography.fields import encrypt
 
 from apps.team.models import Team
 from apps.user.models import User
-
-
-class CredentialCategory(models.Model):
-    class Meta:
-        permissions = (
-            ("add_public_category", "Can add public credential category"),
-        )
-
-    class Icon(models.TextChoices):
-        DEFAULT = 'default.ico', _("default")
-        SERVER = 'server.ico', _("server")
-        LINUX_SERVER = 'linux_server.ico', _("linux server")
-        WINDOWS_SERVER = 'windows_server.ico', _("windows server")
-        DATABASE = 'database.ico', _("database")
-        FIREWALL = 'firewall.ico', _("firewall")
-
-    name = models.CharField(
-        verbose_name=_("name"),
-        max_length=150
-    )
-    icon = models.CharField(
-        verbose_name=_("icon"),
-        max_length=150,
-        choices=Icon.choices,
-        default=Icon.DEFAULT
-    )
-    color = models.CharField(
-        verbose_name=_("color hex"),
-        max_length=7,
-        default='#ffffff'
-    )
-    is_public = models.BooleanField(
-        verbose_name=_("is public?"),
-        default=False
-    )
-    parent = models.ForeignKey(
-        "self",
-        on_delete=models.CASCADE,
-        null=True
-    )
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="categories"
-    )
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="categories",
-        null=True
-    )
+from apps.folder.models import Folder
 
 
 class Credential(models.Model):
@@ -96,11 +46,11 @@ class Credential(models.Model):
         default=Importancy.LOW
     )
     is_public = models.BooleanField(
-        verbose_name=_("is public?"),
+        verbose_name=_("public"),
         default=False
     )
     auto_genpass = models.BooleanField(
-        verbose_name=_("auto generate password"),
+        verbose_name=_("auto generate"),
         default=False
     )
     tags = models.CharField(
@@ -111,7 +61,8 @@ class Credential(models.Model):
     )
     description = models.CharField(
         verbose_name=_("description"),
-        max_length=255
+        max_length=255,
+        null=True
     )
     created_by = models.ForeignKey(
         User,
@@ -135,10 +86,10 @@ class Credential(models.Model):
         verbose_name=_("modified at"),
         auto_now=True
     )
-    category = models.ForeignKey(
-        CredentialCategory,
+    folder = models.ForeignKey(
+        Folder,
         on_delete=models.CASCADE,
-        related_name="credentials",
+        related_name="folders",
         null=True
     )
     team = models.ForeignKey(

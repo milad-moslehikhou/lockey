@@ -1,21 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, AllowAny
 
 from apps.credential import models
 from apps.credential.api import serializers
-
-
-class CredentialCategoryViewSet(ModelViewSet):
-    queryset = models.CredentialCategory.objects.all()
-    serializer_class = serializers.CredentialCategorySerializer
-
-    filterset_fields = ['is_public', 'parent', 'team', 'user']
-    search_fields = None
-    ordering_fields = None
-
-    permission_classes = [
-        IsAuthenticated
-    ]
 
 
 class CredentialViewSet(ModelViewSet):
@@ -28,7 +15,7 @@ class CredentialViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
-        IsAuthenticated
+        AllowAny
     ]
 
 
@@ -41,7 +28,7 @@ class CredentialSecretViewSet(ModelViewSet):
     ordering_fields = None
 
     permission_classes = [
-        IsAuthenticated
+        AllowAny
     ]
 
 
