@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
 
-from ..models import Folder
+from apps.folder.models import Folder
 
 
 class FolderSerializer(serializers.ModelSerializer):

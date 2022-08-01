@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 
-from .views import FolderViewSet
+from apps.folder.api.views import FolderViewSet
 
 app_name = 'folders'
 router = DefaultRouter()

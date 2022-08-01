@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from ..models import Whitelist
+from apps.whitelist.models import Whitelist
 
 
 class WhitelistSerializer(serializers.ModelSerializer):

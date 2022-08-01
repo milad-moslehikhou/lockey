@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import Whitelist
-from .serializers import WhitelistSerializer
+from apps.whitelist.models import Whitelist
+from apps.whitelist.api.serializers import WhitelistSerializer
 from apps.utils.permissions import IsSupperUser
 
 

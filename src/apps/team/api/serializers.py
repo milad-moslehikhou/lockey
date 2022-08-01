@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from apps.team import models
+from apps.team.models import Team
 
 
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Team
+        model = Team
         fields = '__all__'

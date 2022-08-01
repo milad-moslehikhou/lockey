@@ -1,54 +1,51 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, AllowAny
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated, DjangoModelPermissions
 
-from apps.credential import models
-from apps.credential.api import serializers
+from apps.utils.permissions import WhitelistPermission, UserHasAccessGrantOnCredential
+
+from apps.credential.models import Credential, CredentialShare
+from apps.credential.api.serializers import (
+    CredentialModifySerializer,
+    CredentialSerializer,
+    CredentialShareSerializer
+)
 
 
 class CredentialViewSet(ModelViewSet):
-    queryset = models.Credential.objects.all()
-    serializer_class = serializers.CredentialSerializer
+    queryset = Credential.objects.all()
 
-    filterset_fields = ['importancy', 'is_public', 'auto_genpass', 'team', 'category', 'created_by', 'modified_by']
+    filterset_fields = ['importancy', 'is_public', 'auto_genpass', 'team', 'created_by', 'modified_by']
     search_fields = ['name', 'username', 'ip', 'uri']
     ordering_fields = '__all__'
     ordering = ['-id']
 
     permission_classes = [
-        AllowAny
+        WhitelistPermission,
+        IsAuthenticated,
+        DjangoModelPermissions,
+        UserHasAccessGrantOnCredential
     ]
 
+    def get_queryset(self):
+        """
+        This view should return a list of all the credential
+        for the currently authenticated user's team.
+        """
 
-class CredentialSecretViewSet(ModelViewSet):
-    queryset = models.CredentialSecret.objects.all()
-    serializer_class = serializers.CredentialSecretSerializer
+        user = self.request.user
+        if user.is_superuser:
+            return Credential.objects.all()
+        return Credential.objects.filter(team=user.team)
 
-    filterset_fields = ['credential', 'created_by']
-    search_fields = None
-    ordering_fields = None
-
-    permission_classes = [
-        AllowAny
-    ]
-
-
-class CredentialGrantViewSet(ModelViewSet):
-    queryset = models.CredentialGrant.objects.all()
-    serializer_class = serializers.CredentialGrantSerializer
-
-    filterset_fields = ['credential', 'user', 'group', 'team', 'action']
-    search_fields = None
-    ordering_fields = '__all__'
-    ordering = ['-id']
-
-    permission_classes = [
-        IsAuthenticated
-    ]
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return CredentialSerializer
+        return CredentialModifySerializer
 
 
 class CredentialShareViewSet(ModelViewSet):
-    queryset = models.CredentialShare.objects.all()
-    serializer_class = serializers.CredentialShareSerializer
+    queryset = CredentialShare.objects.all()
+    serializer_class = CredentialShareSerializer
 
     filterset_fields = ['shared_by', 'shared_with_user', 'shared_with_group', 'shared_with_team']
     search_fields = ['credential']
@@ -56,5 +53,6 @@ class CredentialShareViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
-        IsAuthenticated
+        IsAuthenticated,
+        DjangoModelPermissions
     ]

@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 
-from .views import TeamViewSet
+from apps.team.api.views import TeamViewSet
 
 app_name = 'teams'
 router = DefaultRouter()

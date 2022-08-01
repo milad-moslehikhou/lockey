@@ -1,12 +1,10 @@
-import json
-
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.decorators import action
 
-from ..models import Folder
-from .serializers import FolderSerializer, FolderTreeSerializer
+from apps.folder.models import Folder
+from apps.folder.api.serializers import FolderSerializer, FolderTreeSerializer
 
 
 class FolderViewSet(ModelViewSet):
@@ -19,6 +17,7 @@ class FolderViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
+        IsAuthenticated,
         DjangoModelPermissions
     ]
 

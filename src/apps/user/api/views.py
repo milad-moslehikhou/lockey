@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import User
-from .serializers import UserSerializer
+from apps.user.models import User
+from apps.user.api.serializers import UserSerializer
 from apps.utils.permissions import IsSupperUser
 
 

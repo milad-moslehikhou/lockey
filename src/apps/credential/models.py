@@ -6,7 +6,6 @@ from django_cryptography.fields import encrypt
 
 from apps.team.models import Team
 from apps.user.models import User
-from apps.folder.models import Folder
 
 
 class Credential(models.Model):
@@ -85,12 +84,6 @@ class Credential(models.Model):
     modified_at = models.DateTimeField(
         verbose_name=_("modified at"),
         auto_now=True
-    )
-    folder = models.ForeignKey(
-        Folder,
-        on_delete=models.CASCADE,
-        related_name="folders",
-        null=True
     )
     team = models.ForeignKey(
         Team,
@@ -201,7 +194,7 @@ class CredentialShare(models.Model):
     credential = models.ForeignKey(
         Credential,
         on_delete=models.CASCADE,
-        related_name="credentials",
+        related_name="share_with",
     )
     shared_by = models.ForeignKey(
         User,

@@ -1,6 +1,6 @@
 from rest_framework.routers import DefaultRouter
 
-from .views import WhitelistViewSet
+from apps.whitelist.api.views import WhitelistViewSet
 
 app_name = 'whitelist'
 router = DefaultRouter()
