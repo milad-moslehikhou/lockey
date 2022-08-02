@@ -21,13 +21,16 @@ class WhitelistPermission(BasePermission):
     Global permission check for whitelist IPs.
     """
 
-    message = _("You don't have permission to access from client")
+    message = _("You don't have permission to access from this client")
 
     def has_permission(self, request, view):
         remote_ip = request.META['REMOTE_ADDR']
-        allow_user = Whitelist.objects.filter(ip=remote_ip, user=request.user).exists()
-        allow_any = Whitelist.objects.filter(ip=remote_ip).exists()
-        return allow_any or allow_user
+        allow_any_from_ip = Whitelist.objects.filter(ip=remote_ip).exists()
+        user = request.user
+        if user.id:
+            allow_user_from_ip = Whitelist.objects.filter(ip=remote_ip, user=user).exists()
+            return allow_any_from_ip or allow_user_from_ip
+        return allow_any_from_ip
 
 
 class IsOwnerOrReadOnly(BasePermission):

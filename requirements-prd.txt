@@ -6,6 +6,7 @@ Django==4.0.6
 django-appconf==1.0.5
 django-cryptography==1.1
 django-filter==22.1
+django-rest-knox==4.2.0
 djangorestframework==3.13.1
 djangorestframework-recursive==0.1.2
 Pillow==9.2.0

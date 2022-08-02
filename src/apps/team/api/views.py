@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.team.models import Team
 from apps.team.api.serializers import TeamSerializer
-from apps.utils.permissions import IsSupperUser
+from apps.utils.permissions import WhitelistPermission, IsSupperUser
 
 
 class TeamViewSet(ModelViewSet):
@@ -15,5 +15,6 @@ class TeamViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
+        WhitelistPermission,
         IsSupperUser
     ]

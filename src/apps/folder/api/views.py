@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 
 from apps.folder.models import Folder
 from apps.folder.api.serializers import FolderSerializer, FolderTreeSerializer
+from apps.utils.permissions import WhitelistPermission
 
 
 class FolderViewSet(ModelViewSet):
@@ -17,6 +18,7 @@ class FolderViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
+        WhitelistPermission,
         IsAuthenticated,
         DjangoModelPermissions
     ]
@@ -28,8 +30,6 @@ class FolderViewSet(ModelViewSet):
         """
 
         user = self.request.user
-        if user.is_superuser:
-            return Folder.objects.all()
         return Folder.objects.filter(team=user.team)
 
     @action(

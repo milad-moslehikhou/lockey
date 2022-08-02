@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated, DjangoModelPermissions
 
@@ -29,13 +31,13 @@ class CredentialViewSet(ModelViewSet):
     def get_queryset(self):
         """
         This view should return a list of all the credential
-        for the currently authenticated user's team.
+        for the currently authenticated user.
         """
 
         user = self.request.user
-        if user.is_superuser:
-            return Credential.objects.all()
-        return Credential.objects.filter(team=user.team)
+        return Credential.objects.filter(
+            (Q(team=user.team) & Q(is_public=True)) | Q(created_by=user)
+        )
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
@@ -53,6 +55,7 @@ class CredentialShareViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
+        WhitelistPermission,
         IsAuthenticated,
         DjangoModelPermissions
     ]
