@@ -3,7 +3,7 @@ from django.db.models import Q
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated, DjangoModelPermissions
 
-from apps.utils.permissions import WhitelistPermission, UserHasAccessGrantOnCredential
+from utils.permissions import UserHasAccessGrantOnCredential
 
 from apps.credential.models import Credential, CredentialShare
 from apps.credential.api.serializers import (
@@ -22,7 +22,6 @@ class CredentialViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
-        WhitelistPermission,
         IsAuthenticated,
         DjangoModelPermissions,
         UserHasAccessGrantOnCredential
@@ -55,7 +54,6 @@ class CredentialShareViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
-        WhitelistPermission,
         IsAuthenticated,
         DjangoModelPermissions
     ]

@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.whitelist.models import Whitelist
 from apps.whitelist.api.serializers import WhitelistSerializer
-from apps.utils.permissions import WhitelistPermission, IsSupperUser
+from utils.permissions import IsSupperUser
 
 
 class WhitelistViewSet(ModelViewSet):
@@ -15,6 +15,5 @@ class WhitelistViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
-        WhitelistPermission,
         IsSupperUser
     ]

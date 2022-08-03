@@ -1,5 +1,7 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 
+from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.views import (
@@ -7,13 +9,10 @@ from knox.views import (
     LogoutView as KnoxLogoutView,
     LogoutAllView as KnoxLogoutAllView)
 
-from apps.utils.permissions import WhitelistPermission
-
 
 class LoginView(KnoxLoginView):
-    permission_classes = [
-        WhitelistPermission
-    ]
+    authentication_classes = []
+    permission_classes = []
 
     def post(self, request, format=None):
         serializer = AuthTokenSerializer(data=request.data)
@@ -25,13 +24,21 @@ class LoginView(KnoxLoginView):
 
 class LogoutView(KnoxLogoutView):
     permission_classes = [
-        WhitelistPermission,
         IsAuthenticated
     ]
+
+    def post(self, request, format=None):
+        request._auth.delete()
+        logout(request=request)
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
 class LogoutAllView(KnoxLogoutAllView):
     permission_classes = [
-        WhitelistPermission,
         IsAuthenticated
     ]
+
+    def post(self, request, format=None):
+        request.user.auth_token_set.all().delete()
+        logout(request=request)
+        return Response(None, status=status.HTTP_204_NO_CONTENT)

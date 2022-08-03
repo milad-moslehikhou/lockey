@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 from rest_framework.viewsets import ModelViewSet
 
 from apps.group.api.serializers import GroupSerializer
-from apps.utils.permissions import WhitelistPermission, IsSupperUser
+from utils.permissions import IsSupperUser
 
 
 class GroupViewSet(ModelViewSet):
@@ -15,6 +15,5 @@ class GroupViewSet(ModelViewSet):
     ordering = ['-id']
 
     permission_classes = [
-        WhitelistPermission,
         IsSupperUser
     ]

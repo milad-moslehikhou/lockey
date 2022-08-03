@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -26,13 +27,14 @@ SECRET_KEY = 'django-insecure-fv(!qi4xn=nd^$=o3!07yk=b!vwn@r)v^2i2y$cp8ugy8xhx_-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
 ALLOWED_HOSTS = []
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django_extensions', # devenv
+    'django_extensions',  # devenv
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -61,6 +63,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.security.AuditLogMiddleware',
+    'middleware.security.AccessWhitelistMiddleware',
 ]
 
 ROOT_URLCONF = 'lockey.urls'
@@ -150,9 +154,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'knox.auth.TokenAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'apps.utils.permissions.WhitelistPermission'
-    ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
@@ -160,23 +161,71 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': os.getenv('DJANGO_PAGE_SIZE', 25)
 }
+
 
 REST_KNOX = {
-  'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
-  'AUTH_TOKEN_CHARACTER_LENGTH': 64,
-  'TOKEN_TTL': timedelta(hours=1),
-  'USER_SERIALIZER': 'knox.serializers.UserSerializer',
-  'TOKEN_LIMIT_PER_USER': 1,
-  'AUTO_REFRESH': False,
+    'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
+    'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+    'TOKEN_TTL': timedelta(hours=1),
+    'USER_SERIALIZER': 'knox.serializers.UserSerializer',
+    'TOKEN_LIMIT_PER_USER': 1,
+    'AUTO_REFRESH': False,
 }
 
-APPEND_SLASH=False
 
-APPLICATION = {
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            '()': 'utils.logging.ColoredFormatter',
+            'format': '%(asctime)s.%(msecs)03d %(levelname)-8s [%(process)d-%(thread)d] [%(name)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default'
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': os.getenv('ORM_LOG_LEVEL', 'DEBUG'),
+            'propagate': False,
+        },
+        'lockey': {
+            'handlers': ['console'],
+            'level': os.getenv('LOCKEY_LOG_LEVEL', 'DEBUG'),
+            'propagate': False,
+        },
+        'lockey.security': {
+            'handlers': ['console'],
+            'level': os.getenv('LOCKEY_LOG_LEVEL', 'DEBUG'),
+            'propagate': False,
+        },
+    },
 }
+
+
+APPEND_SLASH = False
 
 
 LOGIN_URL = 'login'

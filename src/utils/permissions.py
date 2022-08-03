@@ -3,7 +3,6 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from apps.whitelist.models import Whitelist
 from apps.credential.models import CredentialGrant
 
 
@@ -14,23 +13,6 @@ class IsSupperUser(BasePermission):
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_superuser)
-
-
-class WhitelistPermission(BasePermission):
-    """
-    Global permission check for whitelist IPs.
-    """
-
-    message = _("You don't have permission to access from this client")
-
-    def has_permission(self, request, view):
-        remote_ip = request.META['REMOTE_ADDR']
-        allow_any_from_ip = Whitelist.objects.filter(ip=remote_ip).exists()
-        user = request.user
-        if user.id:
-            allow_user_from_ip = Whitelist.objects.filter(ip=remote_ip, user=user).exists()
-            return allow_any_from_ip or allow_user_from_ip
-        return allow_any_from_ip
 
 
 class IsOwnerOrReadOnly(BasePermission):
