@@ -17,4 +17,3 @@ class ColoredFormatter(logging.Formatter):
         message = logging.Formatter.format(self, record)
         colorizer = getattr(self.style, record.levelname, self.style.SUCCESS)
         return colorizer(message)
-

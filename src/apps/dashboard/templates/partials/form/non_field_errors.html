@@ -1,0 +1,11 @@
+{% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
+<div class="mdl-snackbar mdl-js-snackbar" aria-live="assertive" aria-atomic="true" aria-relevant="text">
+    <div class="mdl-snackbar__text">{{ error|escape }}</div>
+    <button type="button" class="mdl-snackbar__action">CLOSE</button>
+</div>
+<div>
+  {{ error|escape }}
+</div>
+{% endfor %}
+{% endif %}
