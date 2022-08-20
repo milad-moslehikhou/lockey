@@ -1,0 +1,7 @@
+{% if field.id_for_label %} id="{{ field.id_for_label }}" {% endif %}
+{% if field.name %} name="{{ field.name }}" {% endif %}
+{% for name, value in field.field.widget.attrs.items %}
+    {% if value is not False %} 
+        {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}
+    {% endif %}
+{% endfor %}

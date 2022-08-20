@@ -3,34 +3,8 @@ body {
     margin: 0;
 }
 
-.topbar_container {
-    display: flex;
-    height: 2rem;
-    background-color: #dedede;
-    border-bottom: .1rem solid rgba(255, 255, 255, 0.1);
-    padding: .5rem;
-}
-
-.topbar_container > .current_user {
-    display: flex;
-}
-
-.topbar_container > .current_user > .avatar {
-    width: 2rem;
-    border-radius: 1rem;
-    background-color: blue;
-}
-
-.content_container {
-    display: flex;
-    height: 100vh;
-}
-.content {
-    width: 85%; 
-    padding: .5rem;
-}
-
-.sidebar {
-    width: 15%;
-    overflow: auto;
+.mdl-textfield__error ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
 }

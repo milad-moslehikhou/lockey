@@ -1,0 +1,7 @@
+{% if field.help_text and not field.errors %}
+<div class="mdc-text-field-helper-line">
+    <div class="mdc-text-field-helper-text" id="{{ field.id_for_label }}_helper" aria-hidden="true">
+        {{ field.help_text|safe }}
+    </div>
+</div>
+{% endif %}

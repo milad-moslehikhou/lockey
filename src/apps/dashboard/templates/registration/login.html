@@ -1,0 +1,23 @@
+{% load static %}
+{% load mdl_components %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login | Lockey</title>
+    {% include 'partials/favicon.html' %}
+    {% include 'partials/meta.html' %}
+    {% include 'partials/js.html' %}
+    {% include 'partials/css.html' %}
+</head>
+<body>
+    <div class="login mdc-card">
+        <form method="post" action="{% url 'dashboard:login' %}">
+            {% csrf_token %}
+            {% mdl_text_input form.username %}
+            {% mdl_password_input form.password %}
+            {% mdl_primary_button 'submit' 'login' %}
+            {% include 'partials/form/non_field_errors.html' %}
+        </form>
+    </div>
+</body>
+</html>

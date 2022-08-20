@@ -228,8 +228,8 @@ LOGGING = {
 APPEND_SLASH = False
 
 
-LOGIN_URL = 'login'
-LOGOUT_URL = 'logout'
+LOGIN_URL = 'dashboard:login'
+LOGOUT_URL = 'dashboard:logout'
 
 
 DEFAULT_MAX_DIGIT = 34
