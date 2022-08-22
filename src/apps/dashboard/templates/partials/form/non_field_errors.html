@@ -1,11 +1,25 @@
+<div class=" mdl-js-snackbar mdl-snackbar" >
+  <div class="mdl-snackbar__text"></div>
+  <button type="button" class="mdl-snackbar__action "></button>
+</div>
 {% if form.non_field_errors %}
-{% for error in form.non_field_errors %}
-<div class="mdl-snackbar mdl-js-snackbar" aria-live="assertive" aria-atomic="true" aria-relevant="text">
-    <div class="mdl-snackbar__text">{{ error|escape }}</div>
-    <button type="button" class="mdl-snackbar__action">CLOSE</button>
-</div>
-<div>
-  {{ error|escape }}
-</div>
-{% endfor %}
+<script>
+  function notify() {
+    var notification = document.querySelector('.mdl-js-snackbar');
+    var msg = ""
+    {% for error in form.non_field_errors %}
+      msg += "{{ error|escape }}" + "\r\n"
+    {% endfor %}
+    var data = {
+      message: msg,
+      timeout: 5000
+    };
+    console.log(notification);
+    notification.MaterialSnackbar.showSnackbar(data);
+  }
+  $(document).ready(function(){
+    notify();   
+    
+  });
+</script>
 {% endif %}

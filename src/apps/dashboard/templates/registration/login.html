@@ -8,16 +8,25 @@
     {% include 'partials/meta.html' %}
     {% include 'partials/js.html' %}
     {% include 'partials/css.html' %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+    
 </head>
 <body>
-    <div class="login mdc-card">
-        <form method="post" action="{% url 'dashboard:login' %}">
-            {% csrf_token %}
-            {% mdl_text_input form.username %}
-            {% mdl_password_input form.password %}
-            {% mdl_primary_button 'submit' 'login' %}
-            {% include 'partials/form/non_field_errors.html' %}
-        </form>
+    <div class="page__container">
+        <div class="logo__container"> 
+            <img src="{% static  'img/logo-lg.png' %}" alt="lockey log large" />
+        </div>
+        <div class="vertical-divider"></div>
+        <div class="form__container">
+            <div><p> Welcome to Lockey </p></div>
+            <form method="post" action="{% url 'dashboard:login' %}">
+                {% csrf_token %}
+                <div>{% mdl_text_input form.username %}</div>
+                <div>{% mdl_password_input form.password %}</div>
+                <div>{% mdl_primary_button 'submit' 'login' %}</div>
+            </form>
+        </div>
+        {% include 'partials/form/non_field_errors.html' %}
     </div>
 </body>
 </html>
