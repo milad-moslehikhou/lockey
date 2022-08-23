@@ -1,3 +1,8 @@
+body {
+    background-image: linear-gradient(to right bottom, #f4eae4, #f7deda, #f8d2d9, #efc8e1, #d9c2ed,
+            #ccc2f2, #bcc2f7, #a9c3fa, #adc4fb, #b1c5fd, #b5c7fe, #b9c8ff);
+}
+
 .login__container {
     margin: 10% auto auto auto;
     width: 20%;
@@ -11,27 +16,26 @@
 
 .content__container {
     display: flex;
+    justify-content: center;
     height: calc(100vh - 40px);
 }
 
 
 .logo__container,
 .form__container {
-    width: 50%;
+    min-width: 400px;
     margin-top: calc((100vh - 50vh) / 2);
     height: 50vh;
 
 }
 
 .form__container {
-    width: 400px;
     margin-left: 5%;
 }
 
 .form__container div {
     display: block;
     width: 100%;
-
 }
 
 .form__container button {
@@ -40,9 +44,9 @@
 }
 
 .form__container .mdl-card {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: rgba(255, 255, 255, 0.5);
     padding: 2rem;
-    border-radius: .5rem;
+    border-radius: 2px;
 }
 
 .form__container .mdl-card p {
@@ -58,9 +62,10 @@
     width: 1px;
     display: block;
     border: none;
-    color: white;
-    background: black;
-    background: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 350, from(#0000004a), to(#fff));
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(0, 0, 0, 0.1) 50%,
+            rgba(255, 255, 255, 0) 100%)
 }
 
 .logo__container {
@@ -73,14 +78,12 @@
 }
 
 .logo__container img {
-
     min-width: 200px;
     max-width: 400px;
 }
 
 .footer {
     height: 40px;
-    margin-top: .5rem;
     text-align: center;
     font-style: italic;
 }
