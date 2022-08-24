@@ -34,12 +34,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django_extensions',  # devenv
+    'django_extensions',  # extra admin commands (devenv)
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django_filters',
     'rest_framework',
@@ -50,7 +49,6 @@ INSTALLED_APPS = [
     'apps.team',
     'apps.folder',
     'apps.credential',
-    'apps.dashboard',
 ]
 
 AUTH_USER_MODEL = 'user.User'
@@ -69,22 +67,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'lockey.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'apps/dashboard/templates/')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.template.context_processors.i18n',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
 
 WSGI_APPLICATION = 'lockey.wsgi.application'
 
@@ -129,20 +111,6 @@ TIME_ZONE = 'Asia/Tehran'
 USE_I18N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
-
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "apps/dashboard/statics/"),
-)
-
-
-MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -225,11 +193,7 @@ LOGGING = {
 }
 
 
-LOGIN_URL = 'dashboard:login'
-LOGIN_REDIRECT_URL = 'dashboard:home'
-LOGOUT_URL = 'dashboard:logout'
-LOGOUT_REDIRECT_URL = LOGIN_URL
-
+APPEND_SLASH=False
 
 DEFAULT_MAX_DIGIT = 34
 DEFAULT_DECIMAL_PLACES = 2
