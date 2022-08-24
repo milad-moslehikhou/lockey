@@ -9,6 +9,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password_change/', PasswordChangeView.as_view(), name='change-password'),
 
-    path('home/', TemplateView.as_view(template_name='home.html')),
-    path('setting/', TemplateView.as_view(template_name='setting.html')),
+    path('home/', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('setting/', TemplateView.as_view(template_name='setting.html'), name='setting'),
 ]

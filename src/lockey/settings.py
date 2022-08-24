@@ -225,11 +225,10 @@ LOGGING = {
 }
 
 
-APPEND_SLASH = False
-
-
 LOGIN_URL = 'dashboard:login'
+LOGIN_REDIRECT_URL = 'dashboard:home'
 LOGOUT_URL = 'dashboard:logout'
+LOGOUT_REDIRECT_URL = LOGIN_URL
 
 
 DEFAULT_MAX_DIGIT = 34
