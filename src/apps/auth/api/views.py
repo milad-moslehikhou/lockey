@@ -1,44 +1,16 @@
-from django.contrib.auth import login, logout
-
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.signals import user_logged_in
+from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from knox.views import (
-    LoginView as KnoxLoginView,
-    LogoutView as KnoxLogoutView,
-    LogoutAllView as KnoxLogoutAllView)
+from knox.views import LoginView as KnoxLoginView
 
 
 class LoginView(KnoxLoginView):
-    authentication_classes = []
-    permission_classes = []
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        login(request, user)
+        request.user = user
+        user_logged_in.send(sender=user.__class__, request=request, user=user)
         return super(LoginView, self).post(request, format=None)
-
-
-class LogoutView(KnoxLogoutView):
-    permission_classes = [
-        IsAuthenticated
-    ]
-
-    def post(self, request, format=None):
-        request._auth.delete()
-        logout(request=request)
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
-
-
-class LogoutAllView(KnoxLogoutAllView):
-    permission_classes = [
-        IsAuthenticated
-    ]
-
-    def post(self, request, format=None):
-        request.user.auth_token_set.all().delete()
-        logout(request=request)
-        return Response(None, status=status.HTTP_204_NO_CONTENT)

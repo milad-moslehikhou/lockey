@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from apps.credential.models import (
     Credential,
+    CredentialFavorite,
     CredentialSecret,
     CredentialGrant,
     CredentialShare
@@ -14,6 +15,12 @@ class CredentialSecretSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CredentialFavoriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CredentialFavorite
+        fields = '__all__'
+
+
 class CredentialGrantSerializer(serializers.ModelSerializer):
     class Meta:
         model = CredentialGrant
@@ -21,6 +28,8 @@ class CredentialGrantSerializer(serializers.ModelSerializer):
 
 
 class CredentialSerializer(serializers.ModelSerializer):
+    is_favorite = serializers.BooleanField()
+
     class Meta:
         model = Credential
         fields = '__all__'

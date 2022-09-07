@@ -122,6 +122,27 @@ class CredentialSecret(models.Model):
     )
 
 
+class CredentialFavorite(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                name='uq__credential__user',
+                fields=['credential', 'user']
+            ),
+        ]
+
+    credential = models.ForeignKey(
+        Credential,
+        on_delete=models.CASCADE,
+        related_name="favorites",
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="credential_favorites",
+    )
+
+
 class CredentialGrant(models.Model):
     class Meta:
         constraints = [
