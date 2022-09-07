@@ -30,6 +30,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
 
 # Application definition
 
@@ -37,11 +40,10 @@ INSTALLED_APPS = [
     'django_extensions',  # extra admin commands (devenv)
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.humanize',
     'django_filters',
     'rest_framework',
+    'corsheaders',
     'knox',
     'apps.whitelist',
     'apps.group',
@@ -55,13 +57,12 @@ AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middleware.security.AuthenticationMiddleware',
     'middleware.security.AuditLogMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'middleware.security.AccessWhitelistMiddleware',
 ]
 
@@ -101,17 +102,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.0/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'Asia/Tehran'
-
-USE_I18N = True
-
-USE_TZ = True
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -127,19 +117,20 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'utils.pagination.Pagination',
+    # 'PAGE_SIZE': os.getenv('DJANGO_PAGE_SIZE', 5),
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
-    'PAGE_SIZE': os.getenv('DJANGO_PAGE_SIZE', 25)
+    'EXCEPTION_HANDLER': 'utils.exception_handler.api_exception',
 }
 
 
 REST_KNOX = {
     'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',
     'AUTH_TOKEN_CHARACTER_LENGTH': 64,
-    'TOKEN_TTL': timedelta(hours=1),
-    'USER_SERIALIZER': 'knox.serializers.UserSerializer',
-    'TOKEN_LIMIT_PER_USER': 1,
-    'AUTO_REFRESH': False,
+    'TOKEN_TTL': timedelta(hours=10),
+    'USER_SERIALIZER': 'apps.user.api.serializers.UserGetSerializer',
+    'TOKEN_LIMIT_PER_USER': 10,
+    'AUTO_REFRESH': True,
 }
 
 
@@ -193,7 +184,7 @@ LOGGING = {
 }
 
 
-APPEND_SLASH=False
+APPEND_SLASH = False
 
 DEFAULT_MAX_DIGIT = 34
 DEFAULT_DECIMAL_PLACES = 2

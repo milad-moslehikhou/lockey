@@ -48,7 +48,7 @@ class Folder(models.Model):
     credentials = models.ManyToManyField(
         Credential,
         verbose_name=_("credentials"),
-        related_name="credentials",
+        related_name="folders",
         blank=True
     )
     team = models.ForeignKey(

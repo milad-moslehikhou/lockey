@@ -42,15 +42,15 @@ class UserHasAccessGrantOnCredential(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        if request.method in ('HEAD', 'OPTIONS'):
+        if request.method in ('HEAD', 'OPTIONS') or user.is_superuser:
             return True
         if request.method == 'GET':
-            return CredentialGrant.objects.get(
-                Q(credential=obj),
-                Q(team=user.team) | Q(group__in=user.groups) | Q(user=user)
+            return CredentialGrant.objects.filter(
+                Q(credential=obj) &
+                (Q(team=user.team) | Q(group__in=user.groups.all()) | Q(user=user))
             ).exists()
-        return CredentialGrant.objects.get(
-            Q(credential=obj),
-            Q(action=CredentialGrant.Action.CHANGE),
-            Q(team=user.team) | Q(group__in=user.groups) | Q(user=user)
+        return CredentialGrant.objects.filter(
+            Q(credential=obj) &
+            Q(action=CredentialGrant.Action.CHANGE) &
+            (Q(team=user.team) | Q(group__in=user.groups.all()) | Q(user=user))
         ).exists()
