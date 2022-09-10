@@ -1,8 +1,10 @@
+
 from django.db import models
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
 from django_cryptography.fields import encrypt
+from apps.folder.models import Folder
 
 from apps.team.models import Team
 from apps.user.models import User
@@ -62,6 +64,12 @@ class Credential(models.Model):
         verbose_name=_("description"),
         max_length=255,
         null=True
+    )
+    folder = models.ForeignKey(
+        Folder,
+        on_delete=models.DO_NOTHING,
+        verbose_name=_("folder"),
+        related_name="credentials",
     )
     created_by = models.ForeignKey(
         User,

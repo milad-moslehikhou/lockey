@@ -40,9 +40,6 @@ class CredentialModifySerializer(serializers.ModelSerializer):
         model = Credential
         fields = '__all__'
 
-    secrets = CredentialSecretSerializer(many=True)
-    grants = CredentialGrantSerializer(many=True)
-
 
 class CredentialShareSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from apps.credential.models import Credential
+
 from apps.team.models import Team
 from apps.user.models import User
 
@@ -44,12 +44,6 @@ class Folder(models.Model):
         on_delete=models.CASCADE,
         related_name="child",
         null=True
-    )
-    credentials = models.ManyToManyField(
-        Credential,
-        verbose_name=_("credentials"),
-        related_name="folders",
-        blank=True
     )
     team = models.ForeignKey(
         Team,
