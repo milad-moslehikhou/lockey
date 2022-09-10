@@ -39,7 +39,7 @@ class AuditLogMiddleware:
     def __call__(self, request):
         username = request.user.username if request.user.username else 'anonymous'
         response = self.get_response(request)
-        print(response.headers, response.data)
+
         _logger.info('{}@{} "{} {}" {}'.format(
             username,
             request.META["REMOTE_ADDR"],

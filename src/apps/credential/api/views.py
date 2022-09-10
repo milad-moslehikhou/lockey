@@ -39,7 +39,7 @@ class CredentialViewSet(ModelViewSet):
             filter_folder = self.request.GET.get('folder', None)
             if filter_folder is not None:
                 return Credential.objects.filter(
-                    (((Q(team=user.team) & Q(is_public=True)) | Q(created_by=user)) & Q(folders=filter_folder))
+                    (((Q(team=user.team) & Q(is_public=True)) | Q(created_by=user)) & Q(folder=filter_folder))
                 ).annotate(favorite=FilteredRelation(
                     'favorites', condition=Q(favorites__user=user)
                 )
