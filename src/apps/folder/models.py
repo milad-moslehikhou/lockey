@@ -12,23 +12,9 @@ class Folder(models.Model):
             ("add_public_folder", "Can add public folder"),
         )
 
-    class Icon(models.TextChoices):
-        DEFAULT = 'default.ico', _("Default")
-        SERVER = 'server.ico', _("Server")
-        LINUX_SERVER = 'linux_server.ico', _("Linux Server")
-        WINDOWS_SERVER = 'windows_server.ico', _("Windows Server")
-        DATABASE = 'database.ico', _("Database")
-        FIREWALL = 'firewall.ico', _("Firewall")
-
     name = models.CharField(
         verbose_name=_("name"),
         max_length=150
-    )
-    icon = models.CharField(
-        verbose_name=_("icon"),
-        max_length=150,
-        choices=Icon.choices,
-        default=Icon.DEFAULT
     )
     color = models.CharField(
         verbose_name=_("color"),

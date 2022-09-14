@@ -18,7 +18,7 @@ class Credential(models.Model):
 
     class Importancy(models.TextChoices):
         HIGH = 'HIGH', _("High")
-        MEDUIM = 'MEDUIM', _("Meduim")
+        MEDIUM = 'MEDIUM', _("Medium")
         LOW = 'LOW', _("Low")
 
     name = models.CharField(
