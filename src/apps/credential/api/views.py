@@ -18,7 +18,7 @@ from apps.credential.api.serializers import (
 
 
 class CredentialViewSet(ModelViewSet):
-    filterset_fields = ['importancy', 'is_public', 'auto_genpass', 'team', 'created_by', 'modified_by']
+    filterset_fields = ['importancy', 'is_public', 'auto_genpass', 'folder', 'team', 'created_by', 'modified_by']
     search_fields = ['name', 'username', 'ip', 'uri']
     ordering_fields = '__all__'
     ordering = ['-id']
@@ -36,18 +36,6 @@ class CredentialViewSet(ModelViewSet):
         """
         if self.request.method in SAFE_METHODS:
             user = self.request.user
-            filter_folder = self.request.GET.get('folder', None)
-            if filter_folder is not None:
-                return Credential.objects.filter(
-                    (((Q(team=user.team) & Q(is_public=True)) | Q(created_by=user)) & Q(folder=filter_folder))
-                ).annotate(favorite=FilteredRelation(
-                    'favorites', condition=Q(favorites__user=user)
-                )
-                ).annotate(is_favorite=Case(
-                    When(favorite__credential__isnull=True, then=Value(False)),
-                    default=Value(True)
-                )
-                )
             return Credential.objects.filter(
                 (Q(team=user.team) & Q(is_public=True)) | Q(created_by=user)
             ).annotate(favorite=FilteredRelation(

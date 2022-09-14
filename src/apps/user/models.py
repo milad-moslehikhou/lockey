@@ -46,21 +46,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             "unique": _("A user with that username already exists."),
         },
     )
-    first_name = models.CharField(
-        verbose_name=_("first name"),
-        max_length=150,
-        blank=True
-    )
-    last_name = models.CharField(
-        verbose_name=_("last name"),
-        max_length=150,
-        blank=True
-    )
-    avatar = models.ImageField(
-        verbose_name=_('avatar'),
-        upload_to='avatars/',
-        null=True
-    )
     is_active = models.BooleanField(
         verbose_name=_("active"),
         default=True,
@@ -85,20 +70,38 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
-    def get_full_name(self):
+
+class UserProfile(models.Model):
+    first_name = models.CharField(
+        verbose_name=_("first name"),
+        max_length=150,
+        null=True
+    )
+    last_name = models.CharField(
+        verbose_name=_("last name"),
+        max_length=150,
+        null=True
+    )
+    avatar = models.ImageField(
+        verbose_name=_('avatar'),
+        upload_to='avatars/',
+        null=True
+    )
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='profile'
+    )
+
+    @property
+    def full_name(self):
         """
-        Return the first_name plus the last_name, with a space in between.
-        """
+            Return the first_name plus the last_name, with a space in between.
+            """
         full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
 
-    def get_short_name(self):
+    @property
+    def short_name(self):
         """Return the short name for the user."""
         return self.first_name
-
-
-class UserProfile(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE
-    )
