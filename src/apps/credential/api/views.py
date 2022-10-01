@@ -42,7 +42,7 @@ class CredentialViewSet(ModelViewSet):
                 'favorites', condition=Q(favorites__user=user)
             )
             ).annotate(is_favorite=Case(
-                When(favorites__user=user, then=Value(False)),
+                When(favorite__isnull=True, then=Value(False)),
                 default=Value(True)
             )
             )

@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.http import HttpResponseForbidden
 from django.contrib.auth.models import AnonymousUser
 from knox.auth import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
 from apps.whitelist.models import Whitelist
 
@@ -20,7 +21,7 @@ class AuthenticationMiddleware:
         try:
             auth = TokenAuthentication()
             user, _ = auth.authenticate(request=request)
-        except TypeError:
+        except (TypeError, AuthenticationFailed):
             pass
 
         request.user = user or AnonymousUser()
