@@ -1,5 +1,6 @@
 asgiref==3.5.2
 autopep8==1.6.0
+backports.zoneinfo==0.2.1
 cffi==1.15.1
 cryptography==37.0.4
 Django==4.0.6
@@ -11,6 +12,7 @@ django-filter==22.1
 django-rest-knox==4.2.0
 djangorestframework==3.13.1
 djangorestframework-recursive==0.1.2
+drf-standardized-errors==0.14.1
 flake8==4.0.1
 mccabe==0.6.1
 Pillow==9.2.0

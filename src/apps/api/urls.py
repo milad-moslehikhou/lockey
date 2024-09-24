@@ -9,4 +9,5 @@ urlpatterns = [
     path(r'teams/', include('apps.team.api.urls', namespace='teams')),
     path(r'folders/', include('apps.folder.api.urls', namespace='folders')),
     path(r'credentials/', include('apps.credential.api.urls', namespace='credentials')),
+    path(r'share/', include('apps.credential_share.api.urls', namespace='share')),
 ]

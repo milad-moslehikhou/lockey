@@ -5,8 +5,7 @@ from apps.credential.models import (
     CredentialFavorite,
     CredentialSecret,
     CredentialGrant,
-    CredentialShare
-)
+    )
 
 
 class CredentialSecretSerializer(serializers.ModelSerializer):
@@ -38,10 +37,4 @@ class CredentialSerializer(serializers.ModelSerializer):
 class CredentialModifySerializer(serializers.ModelSerializer):
     class Meta:
         model = Credential
-        fields = '__all__'
-
-
-class CredentialShareSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CredentialShare
         fields = '__all__'

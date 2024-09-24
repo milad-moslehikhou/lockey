@@ -9,11 +9,10 @@ from rest_framework.views import status
 
 from utils.permissions import UserHasAccessGrantOnCredential
 
-from apps.credential.models import Credential, CredentialFavorite, CredentialShare
+from apps.credential.models import Credential, CredentialFavorite
 from apps.credential.api.serializers import (
     CredentialModifySerializer,
     CredentialSerializer,
-    CredentialShareSerializer
 )
 
 
@@ -71,18 +70,3 @@ class CredentialViewSet(ModelViewSet):
             favorite = get_object_or_404(CredentialFavorite, user=user, credential=credential)
             favorite.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class CredentialShareViewSet(ModelViewSet):
-    queryset = CredentialShare.objects.all()
-    serializer_class = CredentialShareSerializer
-
-    filterset_fields = ['shared_by', 'shared_with_user', 'shared_with_group', 'shared_with_team']
-    search_fields = ['credential']
-    ordering_fields = '__all__'
-    ordering = ['-id']
-
-    permission_classes = [
-        IsAuthenticated,
-        DjangoModelPermissions
-    ]

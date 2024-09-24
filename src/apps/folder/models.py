@@ -27,7 +27,7 @@ class Folder(models.Model):
     )
     parent = models.ForeignKey(
         "self",
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         related_name="child",
         null=True
     )

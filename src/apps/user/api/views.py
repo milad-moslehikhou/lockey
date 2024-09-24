@@ -9,7 +9,7 @@ from apps.user.models import User
 from apps.credential.models import CredentialGrant
 from apps.user.api.serializers import UserSerializer
 from apps.credential.api.serializers import CredentialGrantSerializer
-from apps.auth.serializers import PermissionSerializer
+from apps.auth.api.serializers import PermissionSerializer
 from utils.permissions import IsSupperUser
 
 

@@ -1,8 +1,11 @@
+from django.db.models import RestrictedError
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.decorators import action
 
+from utils.response import ErrorResponse
 from apps.folder.models import Folder
 from apps.folder.api.serializers import FolderSerializer, FolderTreeSerializer
 
@@ -57,3 +60,11 @@ class FolderViewSet(ModelViewSet):
                     'children': self._get_folder_children(sub_folders, parent_id=folder.id)
                 })
         return item
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except RestrictedError:
+            return ErrorResponse(status=status.HTTP_409_CONFLICT, data="Folder is not empty, delete them first")
