@@ -77,9 +77,9 @@ class AccessWhitelistMiddleware:
             ).exists():
                 return self.get_response(request)
             else:
-                return HttpResponseForbidden()
+                return HttpResponseForbidden("You are not in the whitelist")
         else:
             if Whitelist.objects.filter(ip=remote_ip, user=None).exists():
                 return self.get_response(request)
             else:
-                return HttpResponseForbidden()
+                return HttpResponseForbidden("You are not in the whitelist")

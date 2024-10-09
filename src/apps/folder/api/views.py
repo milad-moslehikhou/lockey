@@ -14,7 +14,7 @@ class FolderViewSet(ModelViewSet):
     queryset = Folder.objects.all()
     serializer_class = FolderSerializer
 
-    filterset_fields = ['is_public', 'parent', 'team', 'user']
+    filterset_fields = ['is_public', 'parent', 'user']
     search_fields = None
     ordering_fields = ['id']
     ordering = ['-id']
@@ -24,15 +24,6 @@ class FolderViewSet(ModelViewSet):
         DjangoModelPermissions
     ]
 
-    def get_queryset(self):
-        """
-        This view should return a list of all the folder
-        for the currently authenticated user's team.
-        """
-
-        user = self.request.user
-        return Folder.objects.filter(team=user.team)
-
     @action(
         methods=['GET'],
         url_name="tree",
@@ -41,7 +32,7 @@ class FolderViewSet(ModelViewSet):
     )
     def get_folder_tree(self, request):
         user = request.user
-        public = Folder.objects.filter(team=user.team, is_public=True)
+        public = Folder.objects.filter(is_public=True)
         private = Folder.objects.filter(user=user, is_public=False)
         data = {
             'public': self._get_folder_children(public),

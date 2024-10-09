@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 from django_cryptography.fields import encrypt
 from apps.folder.models import Folder
 
-from apps.team.models import Team
 from apps.user.models import User
 
 
@@ -74,7 +73,7 @@ class Credential(models.Model):
     )
     created_by = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         db_column="created_by",
         verbose_name=_("created by"),
         related_name="created_credentials",
@@ -85,7 +84,7 @@ class Credential(models.Model):
     )
     modified_by = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         db_column="modified_by",
         verbose_name=_("modified by"),
         related_name="modified_credentials"
@@ -93,10 +92,6 @@ class Credential(models.Model):
     modified_at = models.DateTimeField(
         verbose_name=_("modified at"),
         auto_now=True
-    )
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE
     )
 
     def __str__(self):
@@ -162,10 +157,6 @@ class CredentialGrant(models.Model):
             models.UniqueConstraint(
                 name='uq__credential__action__group',
                 fields=['credential', 'action', 'group']
-            ),
-            models.UniqueConstraint(
-                name='uq__credential__action__team',
-                fields=['credential', 'action', 'team']
             )
         ]
 
@@ -190,15 +181,35 @@ class CredentialGrant(models.Model):
         related_name="grants",
         null=True
     )
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="grants",
-        null=True
-    )
     action = models.CharField(
         verbose_name=_("action"),
         max_length=150,
         choices=Action.choices,
         default=Action.VIEW
+    )
+
+
+class CredentialShare(models.Model):
+
+    credential = models.ForeignKey(
+        Credential,
+        on_delete=models.CASCADE,
+        related_name="share_with",
+    )
+    shared_by = models.ForeignKey(
+        User,
+        db_column="shared_by",
+        related_name="shares_by_me",
+        on_delete=models.CASCADE,
+        verbose_name=_("shared by")
+    )
+    shared_with = models.ForeignKey(
+        User,
+        db_column="shared_with",
+        related_name="shares_with_me",
+        on_delete=models.CASCADE,
+        verbose_name=_("shared with")
+    )
+    until = models.DateTimeField(
+        verbose_name=_("shared until")
     )

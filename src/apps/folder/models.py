@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-from apps.team.models import Team
 from apps.user.models import User
 
 
@@ -31,13 +30,8 @@ class Folder(models.Model):
         related_name="child",
         null=True
     )
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="folders"
-    )
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         related_name="folders"
     )

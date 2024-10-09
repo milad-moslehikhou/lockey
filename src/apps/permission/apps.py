@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CredentialShareConfig(AppConfig):
+class PermissionConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.credential_share'
+    name = 'apps.permission'

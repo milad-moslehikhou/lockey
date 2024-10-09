@@ -5,18 +5,16 @@ from django.contrib.auth.models import (
 )
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
-from apps.team.models import Team
-
 
 class UserManager(BaseUserManager):
-    def create(self, username, password=None):
+    def create(self, username, password, **extra_fields):
         """
-        Create and save a user with the given username, email, and password.
+        Create and save a user with the given fields.
         """
         if not username:
             raise ValueError("The given username must be set")
         username = User.normalize_username(username)
-        user = self.model(username=username)
+        user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -58,20 +56,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name=_("date joined"),
         auto_now_add=True
     )
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-        related_name="team",
-        null=True
-    )
-
-    objects = UserManager()
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
-
-
-class UserProfile(models.Model):
     first_name = models.CharField(
         verbose_name=_("first name"),
         max_length=150,
@@ -87,11 +71,11 @@ class UserProfile(models.Model):
         upload_to='avatars/',
         null=True
     )
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name='profile'
-    )
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []
 
     @property
     def full_name(self):

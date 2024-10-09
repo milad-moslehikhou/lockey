@@ -10,7 +10,7 @@ class Whitelist(models.Model):
     )
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         related_name="whitelist",
         null=True
     )

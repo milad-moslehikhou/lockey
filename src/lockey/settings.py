@@ -43,16 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django_filters',
     'rest_framework',
-    'drf_standardized_errors',
     'corsheaders',
     'knox',
     'apps.whitelist',
+    'apps.permission',
     'apps.group',
     'apps.user',
-    'apps.team',
     'apps.folder',
     'apps.credential',
-    'apps.credential_share',
 ]
 
 AUTH_USER_MODEL = 'user.User'
@@ -122,8 +120,7 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS': 'utils.pagination.Pagination',
     # 'PAGE_SIZE': os.getenv('DJANGO_PAGE_SIZE', 5),
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
-    # 'EXCEPTION_HANDLER': 'utils.exception_handler.api_exception',
-    'EXCEPTION_HANDLER': 'drf_standardized_errors.handler.exception_handler',
+    'EXCEPTION_HANDLER': 'utils.exception_handler.api_exception',
 }
 
 
@@ -186,7 +183,8 @@ LOGGING = {
     },
 }
 
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 APPEND_SLASH = False
 
 DEFAULT_MAX_DIGIT = 34

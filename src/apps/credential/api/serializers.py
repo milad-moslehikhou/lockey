@@ -3,6 +3,7 @@ from rest_framework import serializers
 from apps.credential.models import (
     Credential,
     CredentialFavorite,
+    CredentialShare,
     CredentialSecret,
     CredentialGrant,
     )
@@ -37,4 +38,10 @@ class CredentialSerializer(serializers.ModelSerializer):
 class CredentialModifySerializer(serializers.ModelSerializer):
     class Meta:
         model = Credential
+        fields = '__all__'
+
+
+class CredentialShareSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CredentialShare
         fields = '__all__'
