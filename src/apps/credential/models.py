@@ -162,7 +162,7 @@ class CredentialGrant(models.Model):
 
     class Action(models.TextChoices):
         VIEW = 'VIEW', _("View")
-        CHANGE = 'CHANGE', _("Change")
+        MODIFY = 'MODIFY', _("Modify")
 
     credential = models.ForeignKey(
         Credential,

@@ -9,12 +9,13 @@ from rest_framework.views import status
 
 from utils.permissions import UserHasAccessGrantOnCredential
 
-from apps.credential.models import Credential, CredentialFavorite, CredentialShare, CredentialSecret
+from apps.credential.models import Credential, CredentialFavorite, CredentialShare, CredentialSecret, CredentialGrant
 from apps.credential.api.serializers import (
     CredentialModifySerializer,
     CredentialSerializer,
     CredentialShareSerializer,
     CredentialSecretSerializer,
+    CredentialGrantSerializer,
 )
 
 
@@ -72,6 +73,26 @@ class CredentialViewSet(ModelViewSet):
             favorite = get_object_or_404(CredentialFavorite, user=user, credential=credential)
             favorite.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        methods=['GET', 'PATCH'],
+        url_name='grant',
+        url_path='grant',
+        detail=True
+    )
+    def grant(self, request, pk=None):
+        credential = get_object_or_404(Credential, pk=pk)
+        if request.method == 'GET':
+            grants = credential.grants.all()
+            serializer = CredentialGrantSerializer(grants, many=True)
+            return Response(serializer.data)
+        if request.method == 'PATCH':
+            credential.grants.all().delete()
+            serializer = CredentialGrantSerializer(data=request.data, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=status.HTTP_201_CREATED)
+            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
 
     @action(
         methods=['GET', 'PATCH'],

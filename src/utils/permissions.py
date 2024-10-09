@@ -51,6 +51,6 @@ class UserHasAccessGrantOnCredential(BasePermission):
             ).exists()
         return CredentialGrant.objects.filter(
             Q(credential=obj) &
-            Q(action=CredentialGrant.Action.CHANGE) &
+            Q(action=CredentialGrant.Action.MODIFY) &
             (Q(team=user.team) | Q(group__in=user.groups.all()) | Q(user=user))
         ).exists()
