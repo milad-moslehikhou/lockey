@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.contrib.auth.password_validation import validate_password
 
 
 class UserManager(BaseUserManager):
@@ -17,6 +18,8 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        record = PasswordRecord(user=user, password=user.password)
+        record.save()
         return user
 
     def create_superuser(self, username, password=None):
@@ -44,6 +47,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "unique": _("A user with that username already exists."),
         },
     )
+    password = models.CharField(_("password"), max_length=128, validators=[validate_password])
     is_active = models.BooleanField(
         verbose_name=_("active"),
         default=True,
@@ -89,3 +93,27 @@ class User(AbstractBaseUser, PermissionsMixin):
     def short_name(self):
         """Return the short name for the user."""
         return self.first_name
+
+
+class PasswordRecord(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name='password_records',
+        on_delete=models.CASCADE,
+        editable=False
+    )
+
+    password = models.CharField(
+        verbose_name=_('password hash'),
+        max_length=128,
+        editable=False
+    )
+    date = models.DateTimeField(
+        verbose_name=_('date'),
+        auto_now_add=True,
+        editable=False
+    )
+
+    class Meta:
+        get_latest_by = 'date'
+        ordering = ['-date']

@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 
-from utils.response import ErrorResponse
 from apps.folder.models import Folder
 from apps.folder.api.serializers import FolderSerializer, FolderTreeSerializer
 
@@ -58,4 +58,4 @@ class FolderViewSet(ModelViewSet):
             instance.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except RestrictedError:
-            return ErrorResponse(status=status.HTTP_409_CONFLICT, data="Folder is not empty, delete them first")
+            raise ValidationError("Folder is not empty, delete them first", "restericted-field")

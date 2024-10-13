@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django_filters',
     'rest_framework',
+    'drf_standardized_errors',
     'corsheaders',
     'knox',
     'apps.whitelist',
@@ -99,6 +100,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+    {
+        'NAME': 'utils.password_validations.ComplexityValidator',
+    },
+    {
+        'NAME': 'utils.password_validations.ReusedPasswordValidator',
+    },
+    {
+        'NAME': 'utils.password_validations.MinimumChangeIntervalValidator',
+    },
 ]
 
 
@@ -120,9 +130,10 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS': 'utils.pagination.Pagination',
     # 'PAGE_SIZE': os.getenv('DJANGO_PAGE_SIZE', 5),
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
-    'EXCEPTION_HANDLER': 'utils.exception_handler.api_exception',
+    'EXCEPTION_HANDLER': 'drf_standardized_errors.handler.exception_handler',
 }
 
+DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 
 REST_KNOX = {
     'SECURE_HASH_ALGORITHM': 'cryptography.hazmat.primitives.hashes.SHA512',

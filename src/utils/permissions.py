@@ -33,12 +33,12 @@ class IsOwnerOrReadOnly(BasePermission):
         return obj.created_by == request.user
 
 
-class UserHasAccessGrantOnCredential(BasePermission):
+class CredentialGrantPermission(BasePermission):
     """
     Allow access to users who have grant on credential object.
     """
 
-    message = _("You don't have enough grant on this credential")
+    message = _("You do not have grant on this credential")
 
     def has_object_permission(self, request, view, obj):
         user = request.user
@@ -47,10 +47,10 @@ class UserHasAccessGrantOnCredential(BasePermission):
         if request.method == 'GET':
             return CredentialGrant.objects.filter(
                 Q(credential=obj) &
-                (Q(team=user.team) | Q(group__in=user.groups.all()) | Q(user=user))
+                (Q(group__in=user.groups.all()) | Q(user=user))
             ).exists()
         return CredentialGrant.objects.filter(
             Q(credential=obj) &
             Q(action=CredentialGrant.Action.MODIFY) &
-            (Q(team=user.team) | Q(group__in=user.groups.all()) | Q(user=user))
+            (Q(group__in=user.groups.all()) | Q(user=user))
         ).exists()

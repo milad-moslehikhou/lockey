@@ -7,9 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import status
 
-from utils.permissions import UserHasAccessGrantOnCredential
-
-from apps.credential.models import Credential, CredentialFavorite, CredentialShare, CredentialSecret, CredentialGrant
+from utils.permissions import CredentialGrantPermission
+from apps.credential.models import Credential, CredentialFavorite, CredentialShare, CredentialSecret
 from apps.credential.api.serializers import (
     CredentialModifySerializer,
     CredentialSerializer,
@@ -28,7 +27,7 @@ class CredentialViewSet(ModelViewSet):
     permission_classes = [
         IsAuthenticated,
         DjangoModelPermissions,
-        UserHasAccessGrantOnCredential
+        CredentialGrantPermission
     ]
 
     def get_queryset(self):
@@ -89,10 +88,10 @@ class CredentialViewSet(ModelViewSet):
         if request.method == 'PATCH':
             credential.grants.all().delete()
             serializer = CredentialGrantSerializer(data=request.data, many=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(status=status.HTTP_201_CREATED)
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            return Response(status=status.HTTP_201_CREATED, headers=headers)
 
     @action(
         methods=['GET', 'PATCH'],
@@ -109,10 +108,10 @@ class CredentialViewSet(ModelViewSet):
         if request.method == 'PATCH':
             credential.share_with.all().delete()
             serializer = CredentialShareSerializer(data=request.data, many=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(status=status.HTTP_201_CREATED)
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            return Response(status=status.HTTP_201_CREATED, headers=headers)
 
     @action(
         methods=['GET'],
@@ -131,7 +130,7 @@ class CredentialViewSet(ModelViewSet):
         url_path='secret',
         detail=True
     )
-    def get_secret(self, request, pk=None):
+    def secret(self, request, pk=None):
         credential = get_object_or_404(Credential, pk=pk)
         if request.method == 'GET':
             secret = CredentialSecret.objects.filter(credential=credential).order_by('-id')[:2]
@@ -139,7 +138,7 @@ class CredentialViewSet(ModelViewSet):
             return Response(serializer.data)
         if request.method == 'POST':
             serializer = CredentialSecretSerializer(data=request.data, many=False)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(status=status.HTTP_201_CREATED, data=serializer.data)
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.errors)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            return Response(status=status.HTTP_201_CREATED, data=serializer.data, headers=headers)
