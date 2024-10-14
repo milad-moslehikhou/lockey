@@ -1,3 +1,4 @@
+from typing import Any
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import (
@@ -29,6 +30,7 @@ class UserManager(BaseUserManager):
         username = User.normalize_username(username)
         user = self.create(username=username, password=password)
         user.is_superuser = True
+        user.force_change_pass = False
         user.save(using=self._db)
         return user
 
@@ -55,6 +57,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             "Designates whether this user should be treated as active. "
             "Unselect this instead of deleting accounts."
         ),
+    )
+    force_change_pass = models.BooleanField(
+        verbose_name=_("force change password"),
+        default=True,
     )
     date_joined = models.DateTimeField(
         verbose_name=_("date joined"),
@@ -95,6 +101,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.first_name
 
 
+class PasswordRecordManager(models.Manager):
+
+    def create(self, **kwargs: Any) -> Any:
+        self.objects.all()[:-3].delete()
+        return super().create(**kwargs)
+
+
 class PasswordRecord(models.Model):
     user = models.ForeignKey(
         User,
@@ -113,6 +126,8 @@ class PasswordRecord(models.Model):
         auto_now_add=True,
         editable=False
     )
+
+    objects = PasswordRecordManager()
 
     class Meta:
         get_latest_by = 'date'

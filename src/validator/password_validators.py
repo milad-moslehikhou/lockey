@@ -20,10 +20,7 @@ class ComplexityValidator:
             ('min_special_chars', r'[^0-9A-Za-z]', 'special charcters'),
         ]
         for attr, _regex, _name in self.min_chars_of_each_type:
-            setattr(
-                self, attr,
-                kwargs.get(attr, 1)
-            )
+            setattr(self, attr, kwargs.get(attr, 1))
 
     def validate(self, password, user=None):
         password_valid = True
@@ -57,7 +54,7 @@ class ComplexityValidator:
         return f"This password is too simple. It must contain at least {', '.join(requirements)}."
 
 
-class ReusedPasswordValidator:
+class ReusedValidator:
 
     def __init__(self, record_length=3):
         if record_length <= 0:
@@ -82,7 +79,7 @@ class ReusedPasswordValidator:
 
     def get_help_text(self):
         return _(
-            f"The password cannot be the same as the password used the last {self.record_length} times."
+            f"The password cannot be the same as it used the last {self.record_length} times."
         )
 
 
@@ -90,9 +87,10 @@ class MinimumChangeIntervalValidator:
 
     def __init__(self, min_interval_days=1):
         self.min_interval = timedelta(days=min_interval_days)
+        self.requires_context = True
 
     def validate(self, password, user=None):
-        if user is None:
+        if user is None or user.force_change_pass:
             return None
         try:
             latest_password_record = (
@@ -102,11 +100,11 @@ class MinimumChangeIntervalValidator:
             return None
         if (timezone.now() - latest_password_record.date) < self.min_interval:
             raise ValidationError(
-                _(f"It must be at least {self.min_interval.days} days since the last password change."),
+                self.get_help_text(),
                 code='password_reset_interval',
             )
 
     def get_help_text(self):
         return _(
-            f"It must be at least {self.min_interval.days} days since the last password change."
+            f"The password must be at least {self.min_interval.days} days since the last change."
         )

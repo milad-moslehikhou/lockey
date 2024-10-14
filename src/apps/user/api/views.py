@@ -1,8 +1,9 @@
 from django.db.models import Q
 from django.contrib.auth.models import Permission
+from django.contrib.auth.password_validation import validate_password
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.serializers import ValidationError
+from rest_framework.serializers import ValidationError, DjangoValidationError
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -75,13 +76,15 @@ class UserViewSet(ModelViewSet):
     )
     def set_userpassword(self, request, pk=None):
         user = get_object_or_404(User, pk=pk)
-        serializer = UserSetPasswordSerializer(data=request.data, many=False)
+        serializer = UserSetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_password1 = serializer.validated_data.pop('new_password1')
         new_password2 = serializer.validated_data.pop('new_password2')
+        force_change_pass = serializer.validated_data.pop('force_change_pass', True)
         if new_password1 != new_password2:
             raise ValidationError({'new_password2': 'Password do not match.'})
         user.set_password(new_password1)
+        user.force_change_pass = force_change_pass
         user.save()
         passRecord = PasswordRecord(user=user, password=user.password)
         passRecord.save()
@@ -95,17 +98,21 @@ class UserViewSet(ModelViewSet):
     )
     def change_userpassword(self, request, pk=None):
         user = get_object_or_404(User, pk=pk)
-        serializer = UserChangePasswordSerializer(data=request.data, many=False)
-        UserChangePasswordSerializer()
+        serializer = UserChangePasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         old_password = serializer.validated_data.pop('old_password')
         if not user.check_password(old_password):
             raise ValidationError({'old_password': 'Incorrect password.'})
         new_password1 = serializer.validated_data.pop('new_password1')
+        try:
+            validate_password(new_password1, user)
+        except DjangoValidationError as e:
+            raise ValidationError({'new_password1': '\n'.join(e)})
         new_password2 = serializer.validated_data.pop('new_password2')
         if new_password1 != new_password2:
             raise ValidationError({'new_password2': 'Password do not match.'})
         user.set_password(new_password1)
+        user.force_change_pass = False
         user.save()
         passRecord = PasswordRecord(user=user, password=user.password)
         passRecord.save()

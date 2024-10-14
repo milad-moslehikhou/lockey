@@ -101,13 +101,13 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
     {
-        'NAME': 'utils.password_validations.ComplexityValidator',
+        'NAME': 'validator.password_validators.ComplexityValidator',
     },
     {
-        'NAME': 'utils.password_validations.ReusedPasswordValidator',
+        'NAME': 'validator.password_validators.ReusedValidator',
     },
     {
-        'NAME': 'utils.password_validations.MinimumChangeIntervalValidator',
+        'NAME': 'validator.password_validators.MinimumChangeIntervalValidator',
     },
 ]
 
