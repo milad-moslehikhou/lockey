@@ -45,10 +45,6 @@ class Credential(models.Model):
         choices=Importancy.choices,
         default=Importancy.LOW
     )
-    is_public = models.BooleanField(
-        verbose_name=_("public"),
-        default=False
-    )
     auto_genpass = models.BooleanField(
         verbose_name=_("auto generate"),
         default=False
@@ -194,7 +190,7 @@ class CredentialShare(models.Model):
     credential = models.ForeignKey(
         Credential,
         on_delete=models.CASCADE,
-        related_name="share_with",
+        related_name="shares",
     )
     shared_by = models.ForeignKey(
         User,

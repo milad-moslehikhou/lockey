@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db.models import Q, Case, When, Value, FilteredRelation
 from django.shortcuts import get_object_or_404
 
@@ -19,7 +20,7 @@ from apps.credential.api.serializers import (
 
 
 class CredentialViewSet(ModelViewSet):
-    filterset_fields = ['importancy', 'is_public', 'auto_genpass', 'folder', 'created_by', 'modified_by']
+    filterset_fields = ['importancy', 'auto_genpass', 'folder', 'created_by', 'modified_by']
     search_fields = ['name', 'username', 'ip', 'uri']
     ordering_fields = '__all__'
     ordering = ['-id']
@@ -36,9 +37,11 @@ class CredentialViewSet(ModelViewSet):
         for the currently authenticated user.
         """
         if self.request.method in SAFE_METHODS:
+            # Delete credential share that expired on every get request
+            CredentialShare.objects.filter(until__lt=datetime.now()).delete()
             user = self.request.user
             return Credential.objects.filter(
-                (Q(is_public=True)) | Q(created_by=user)
+                Q(created_by=user) | Q(shares__shared_with=user)
             ).annotate(favorite=FilteredRelation(
                 'favorites', condition=Q(favorites__user=user)
             )
@@ -102,11 +105,11 @@ class CredentialViewSet(ModelViewSet):
     def share(self, request, pk=None):
         credential = get_object_or_404(Credential, pk=pk)
         if request.method == 'GET':
-            shares = credential.share_with.all()
+            shares = credential.shares.all()
             serializer = CredentialShareSerializer(shares, many=True)
             return Response(serializer.data)
         if request.method == 'PATCH':
-            credential.share_with.all().delete()
+            credential.shares.all().delete()
             serializer = CredentialShareSerializer(data=request.data, many=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
