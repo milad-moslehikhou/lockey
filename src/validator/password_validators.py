@@ -40,7 +40,8 @@ class ComplexityValidator:
 
         if not password_valid:
             raise ValidationError(
-                f"This password is too simple. It must contain at least {', '.join(errors)}.",
+                f"This password is too simple. It must contain at least {
+                    ', '.join(errors)}.",
                 code='password_complexity',
             )
 
@@ -79,7 +80,8 @@ class ReusedValidator:
 
     def get_help_text(self):
         return _(
-            f"The password cannot be the same as it used the last {self.record_length} times."
+            f"The password cannot be the same as it used the last {
+                self.record_length} times."
         )
 
 
@@ -106,5 +108,6 @@ class MinimumChangeIntervalValidator:
 
     def get_help_text(self):
         return _(
-            f"The password must be at least {self.min_interval.days} days since the last change."
+            f"The password must be at least {
+                self.min_interval.days} days since the last change."
         )

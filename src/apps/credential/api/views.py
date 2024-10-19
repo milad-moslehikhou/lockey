@@ -20,7 +20,12 @@ from apps.credential.api.serializers import (
 
 
 class CredentialViewSet(ModelViewSet):
-    filterset_fields = ['importancy', 'auto_genpass', 'folder', 'created_by', 'modified_by']
+    filterset_fields = [
+        'importancy',
+        'auto_genpass',
+        'folder',
+        'created_by',
+        'modified_by']
     search_fields = ['name', 'username', 'ip', 'uri']
     ordering_fields = '__all__'
     ordering = ['-id']
@@ -72,7 +77,8 @@ class CredentialViewSet(ModelViewSet):
             favorite.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         if request.method == 'DELETE':
-            favorite = get_object_or_404(CredentialFavorite, user=user, credential=credential)
+            favorite = get_object_or_404(
+                CredentialFavorite, user=user, credential=credential)
             favorite.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -90,7 +96,8 @@ class CredentialViewSet(ModelViewSet):
             return Response(serializer.data)
         if request.method == 'PATCH':
             credential.grants.all().delete()
-            serializer = CredentialGrantSerializer(data=request.data, many=True)
+            serializer = CredentialGrantSerializer(
+                data=request.data, many=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             headers = self.get_success_headers(serializer.data)
@@ -110,7 +117,8 @@ class CredentialViewSet(ModelViewSet):
             return Response(serializer.data)
         if request.method == 'PATCH':
             credential.shares.all().delete()
-            serializer = CredentialShareSerializer(data=request.data, many=True)
+            serializer = CredentialShareSerializer(
+                data=request.data, many=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             headers = self.get_success_headers(serializer.data)
@@ -136,12 +144,15 @@ class CredentialViewSet(ModelViewSet):
     def secret(self, request, pk=None):
         credential = get_object_or_404(Credential, pk=pk)
         if request.method == 'GET':
-            secret = CredentialSecret.objects.filter(credential=credential).order_by('-id')[:2]
+            secret = CredentialSecret.objects.filter(
+                credential=credential).order_by('-id')[:2]
             serializer = CredentialSecretSerializer(secret, many=True)
             return Response(serializer.data)
         if request.method == 'POST':
-            serializer = CredentialSecretSerializer(data=request.data, many=False)
+            serializer = CredentialSecretSerializer(
+                data=request.data, many=False)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             headers = self.get_success_headers(serializer.data)
-            return Response(status=status.HTTP_201_CREATED, data=serializer.data, headers=headers)
+            return Response(status=status.HTTP_201_CREATED,
+                            data=serializer.data, headers=headers)

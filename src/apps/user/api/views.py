@@ -16,7 +16,7 @@ from apps.user.api.serializers import (
     UserGetSerializer,
     UserSetPasswordSerializer,
     UserChangePasswordSerializer
-    )
+)
 from apps.credential.api.serializers import CredentialGrantSerializer
 from apps.auth.api.serializers import PermissionSerializer
 from utils.permissions import IsSupperUser, SAFE_METHODS
@@ -80,7 +80,8 @@ class UserViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         new_password1 = serializer.validated_data.pop('new_password1')
         new_password2 = serializer.validated_data.pop('new_password2')
-        force_change_pass = serializer.validated_data.pop('force_change_pass', True)
+        force_change_pass = serializer.validated_data.pop(
+            'force_change_pass', True)
         if new_password1 != new_password2:
             raise ValidationError({'new_password2': 'Password do not match.'})
         user.set_password(new_password1)
@@ -91,10 +92,10 @@ class UserViewSet(ModelViewSet):
         return Response(status=status.HTTP_200_OK)
 
     @action(
-            methods=['POST'],
-            url_name='change-password',
-            url_path='change-password',
-            detail=True
+        methods=['POST'],
+        url_name='change-password',
+        url_path='change-password',
+        detail=True
     )
     def change_userpassword(self, request, pk=None):
         user = get_object_or_404(User, pk=pk)

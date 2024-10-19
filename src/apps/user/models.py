@@ -49,7 +49,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             "unique": _("A user with that username already exists."),
         },
     )
-    password = models.CharField(_("password"), max_length=128, validators=[validate_password])
+    password = models.CharField(
+        _("password"),
+        max_length=128,
+        validators=[validate_password])
     is_active = models.BooleanField(
         verbose_name=_("active"),
         default=True,

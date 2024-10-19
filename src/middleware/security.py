@@ -77,10 +77,11 @@ class AccessWhitelistMiddleware:
 
         remote_ip = request.META['REMOTE_ADDR']
         error = {
-                    'type': "client_error",
+            'type': "client_error",
                     'errors': [{'detail': "You are not allowed to reach the resources. Please contact administrator."}]
-                }
-        if hasattr(request, 'user') and not isinstance(request.user, AnonymousUser):
+        }
+        if hasattr(request, 'user') and not isinstance(
+                request.user, AnonymousUser):
             user = request.user
             if Whitelist.objects.filter(
                 Q(ip=remote_ip, user=user) | Q(ip=remote_ip, user=None)

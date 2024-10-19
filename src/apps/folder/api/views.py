@@ -58,4 +58,6 @@ class FolderViewSet(ModelViewSet):
             instance.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except RestrictedError:
-            raise ValidationError("Folder is not empty, delete them first", "restericted-field")
+            raise ValidationError(
+                "Folder is not empty, delete them first",
+                "restericted-field")

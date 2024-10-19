@@ -19,3 +19,6 @@ git remote add origin  https://github.com/milad-moslehikhou/lockey.git
 git branch -M main
 git push -uf origin main
 ```
+
+
+install python-devel libffi-devel gcc

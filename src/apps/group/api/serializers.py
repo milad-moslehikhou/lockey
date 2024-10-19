@@ -12,7 +12,9 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class GroupModifySerializer(serializers.ModelSerializer):
-    members = serializers.ListField(child=serializers.ModelField(User()._meta.get_field('id')))
+    members = serializers.ListField(
+        child=serializers.ModelField(
+            User()._meta.get_field('id')))
 
     class Meta:
         model = Group
@@ -20,4 +22,6 @@ class GroupModifySerializer(serializers.ModelSerializer):
 
 
 class GroupMemberSerializer(serializers.Serializer):
-    members = serializers.ListField(child=serializers.ModelField(User()._meta.get_field('id')))
+    members = serializers.ListField(
+        child=serializers.ModelField(
+            User()._meta.get_field('id')))

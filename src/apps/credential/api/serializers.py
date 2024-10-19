@@ -6,7 +6,7 @@ from apps.credential.models import (
     CredentialShare,
     CredentialSecret,
     CredentialGrant,
-    )
+)
 
 
 class CredentialSecretSerializer(serializers.ModelSerializer):

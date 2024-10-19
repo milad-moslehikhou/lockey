@@ -34,12 +34,14 @@ class GroupViewSet(ModelViewSet):
         group.save()
         retSerializer = GroupSerializer(group)
         headers = self.get_success_headers(data=retSerializer.data)
-        return Response(status=status.HTTP_201_CREATED, data=retSerializer.data, headers=headers)
+        return Response(status=status.HTTP_201_CREATED,
+                        data=retSerializer.data, headers=headers)
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = GroupModifySerializer(instance, data=request.data, partial=partial)
+        serializer = GroupModifySerializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         members = serializer.validated_data.pop('members')
         instance.user_set.clear()
@@ -47,7 +49,8 @@ class GroupViewSet(ModelViewSet):
         instance.save()
         retSerializer = GroupSerializer(instance)
         headers = self.get_success_headers(data=retSerializer.data)
-        return Response(status=status.HTTP_200_OK, data=retSerializer.data, headers=headers)
+        return Response(status=status.HTTP_200_OK,
+                        data=retSerializer.data, headers=headers)
 
     @action(
         methods=['GET', 'PATCH'],
