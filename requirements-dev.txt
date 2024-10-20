@@ -17,12 +17,14 @@ drf-standardized-errors==0.14.1
 filelock==3.16.1
 flake8==7.1.1
 Flake8-pyproject==1.2.3
+gunicorn==23.0.0
 identify==2.6.1
 mccabe==0.7.0
+mysqlclient==2.2.4
 nodeenv==1.9.1
+packaging==24.1
 pillow==11.0.0
 platformdirs==4.3.6
-pre_commit==4.0.1
 pycodestyle==2.12.1
 pycparser==2.21
 pyflakes==3.2.0
@@ -32,3 +34,4 @@ six==1.16.0
 sqlparse==0.4.2
 toml==0.10.2
 tzdata==2022.1
+virtualenv==20.27.0

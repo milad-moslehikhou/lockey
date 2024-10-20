@@ -22,20 +22,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-fv(!qi4xn=nd^$=o3!07yk=b!vwn@r)v^2i2y$cp8ugy8xhx_-'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+
+PRODUCTION = bool(os.environ.get("DJANGO_PRODUCTION", default=False))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=False))
 
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOW_HOSTS", default=['127.0.0.1', 'localhost'])
 
-ALLOWED_HOSTS = []
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
+CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_CORS_ALLOWED_ORIGINS", default=['http://localhost:9000'])
 
 # Application definition
-
 INSTALLED_APPS = [
     'django_extensions',  # extra admin commands (devenv)
     'django.contrib.auth',
@@ -76,13 +74,21 @@ WSGI_APPLICATION = 'lockey.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'sqlite3.db',
-    }
+DATABASE_PRD = {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': os.environ.get("DB_NAME", default='lockeydb'),
+    'USER': os.environ.get("DB_USER", default='admin'),
+    'PASSWORD': os.environ.get("DB_PASS", default='admin'),
+    'HOST': os.environ.get("DB_HOST", default='localhost'),
+    'PORT': os.environ.get("DB_PORT", default='3306'),
 }
-
+DATABASE_DEV = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'sqlite3.db',
+}
+DATABASES = {
+    'default': DATABASE_PRD if PRODUCTION else DATABASE_DEV
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -173,22 +179,22 @@ LOGGING = {
         },
         'django.server': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
             'propagate': False,
         },
         'django.db.backends': {
             'handlers': ['console'],
-            'level': os.getenv('ORM_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('ORM_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
             'propagate': False,
         },
         'lockey': {
             'handlers': ['console'],
-            'level': os.getenv('LOCKEY_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('LOCKEY_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
             'propagate': False,
         },
         'lockey.security': {
             'handlers': ['console'],
-            'level': os.getenv('LOCKEY_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('LOCKEY_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
             'propagate': False,
         },
     },

@@ -40,8 +40,7 @@ class ComplexityValidator:
 
         if not password_valid:
             raise ValidationError(
-                f"This password is too simple. It must contain at least {
-                    ', '.join(errors)}.",
+                f"This password is too simple. It must contain at least {', '.join(errors)}.",
                 code='password_complexity',
             )
 
