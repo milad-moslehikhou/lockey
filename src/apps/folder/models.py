@@ -7,9 +7,7 @@ from apps.user.models import User
 
 class Folder(models.Model):
     class Meta:
-        permissions = (
-            ("add_public_folder", "Can add public folder"),
-        )
+        permissions = (("add_public_folder", "Can add public folder"),)
 
     name = models.CharField(
         verbose_name=_("name"),

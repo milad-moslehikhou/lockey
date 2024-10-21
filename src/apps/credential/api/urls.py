@@ -1,8 +1,6 @@
 from rest_framework.routers import DefaultRouter
 
-from apps.credential.api.views import (
-    CredentialViewSet
-)
+from apps.credential.api.views import CredentialViewSet
 
 app_name = 'credentials'
 router = DefaultRouter()

@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
 )
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.password_validation import validate_password
+from utils.storage import ImageStorage
 
 
 class UserManager(BaseUserManager):
@@ -82,6 +83,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.ImageField(
         verbose_name=_('avatar'),
         upload_to='avatars/',
+        storage=ImageStorage(),
         null=True
     )
 

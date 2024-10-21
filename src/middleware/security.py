@@ -53,8 +53,7 @@ class AuditLogMiddleware:
             request.method,
             request.get_full_path(),
             response.status_code
-        )
-        )
+        ))
         return response
 
 
@@ -78,7 +77,7 @@ class AccessWhitelistMiddleware:
         remote_ip = request.META['REMOTE_ADDR']
         error = {
             'type': "client_error",
-                    'errors': [{'detail': "You are not allowed to reach the resources. Please contact administrator."}]
+            'errors': [{'detail': "You are not allowed to reach the resources. Please contact administrator."}]
         }
         if hasattr(request, 'user') and not isinstance(
                 request.user, AnonymousUser):
@@ -99,9 +98,7 @@ class AccessWhitelistMiddleware:
 class PasswordExpirationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self.expiration_days = timedelta(
-            days=getattr(settings, 'PASSWORD_EXPIRATION_DAYS', 90.0)
-        )
+        self.expiration_days = timedelta(days=getattr(settings, 'PASSWORD_EXPIRATION_DAYS', 90.0))
 
     def __call__(self, request):
         resolve_match = resolve(request.path)
@@ -116,10 +113,8 @@ class PasswordExpirationMiddleware:
                 if request.method == 'GET':
                     messages.warning(
                         request,
-                        'It has exceeded {} and the password cannot be changed. Please change it before continuing.'.
-                        format(
-                            self.expiration_days.days
-                        ),
+                        'It has exceeded {} and the password cannot be changed. Please change it before continuing.'
+                        .format(self.expiration_days.days),
                         fail_silently=True,
                     )
 

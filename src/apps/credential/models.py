@@ -11,9 +11,7 @@ from apps.user.models import User
 
 class Credential(models.Model):
     class Meta:
-        permissions = (
-            ("add_public_credential", "Can add public credential"),
-        )
+        permissions = (("add_public_credential", "Can add public credential"),)
 
     class Importancy(models.TextChoices):
         HIGH = 'HIGH', _("High")

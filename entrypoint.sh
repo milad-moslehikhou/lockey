@@ -5,12 +5,13 @@ until nc -z -w30 $DB_HOST $DB_PORT ; do
     sleep 1
 done
 
+if [[ ! -f initializeddb ]] ; then
+touch initializeddb
 python manage.py migrate
 cat <<EOF | python manage.py shell
 from django.contrib.auth import get_user_model
 User = get_user_model()
 User.objects.filter(username='$DJANGO_ADMIN_USER').exists() or User.objects.create_superuser('$DJANGO_ADMIN_USER', '$DJANGO_ADMIN_PASS')
-from apps.whitelist.models import Whitelist
-Whitelist.objects.update_or_create(id=1, ip="127.0.0.1")
 EOF
+fi
 gunicorn lockey.wsgi:application --bind 0.0.0.0:8000

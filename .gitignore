@@ -89,3 +89,9 @@ venv-prd/
 
 # Devlopment docs
 devdocs
+
+# build files
+/build
+
+# media files
+/media

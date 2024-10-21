@@ -4,25 +4,47 @@ services:
             context: .
             dockerfile: Dockerfile
         image: lockey:1.0
+        container_name: lockey
         depends_on:
             - mysql 
         environment:
             - "DJANGO_PRODUCTION=True"
+            - "DJANGO_BASE_URL=http://localhost:8080/"
+            - "DJANGO_SECRET_KEY=-e^)23vce!)!)gl2xo##3mebev!%27i%2nl#pml1qh2(@t(u(u"
             - "DJANGO_ADMIN_USER=admin"
             - "DJANGO_ADMIN_PASS=admin"
-            - "DJANGO_SECRET_KEY=-e^)23vce!)!)gl2xo##3mebev!%27i%2nl#pml1qh2(@t(u(u"
             - "DB_HOST=mysql"
             - "DB_PORT=3306"
             - "DB_NAME=lockeydb"
             - "DB_USER=admin"
             - "DB_PASS=admin"
         volumes:
-            - type: volume
-              source: lockey_data
+            - type: bind
+              source: ./media
               target: /usr/src/app/media/
+
+    nginx:
+        image: nginx:1.27.2
+        container_name: lockeynginx
+        environment:
+            - "API_BASE_URL=http://localhost:8080/api/v1/"
+        volumes:
+            - type: bind
+              source: nginx.conf
+              target: /etc/nginx/conf.d/default.conf
+            - type: bind
+              source: ./build
+              target: /usr/share/nginx/html
+            - type: bind
+              source: ./media
+              target: /usr/share/nginx/html/media
+        ports:
+            - target: 80
+              published: 8080
 
     mysql:
         image: mysql:9.1.0
+        container_name: lockeydb
         environment:
             - "MYSQL_ROOT_PASSWORD=root"
             - "MYSQL_DATABASE=lockeydb"
@@ -37,6 +59,4 @@ services:
 
 volumes:
     mysql_data:
-        external: true
-    lockey_data:
         external: true

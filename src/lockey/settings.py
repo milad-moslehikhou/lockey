@@ -17,12 +17,13 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+BASE_URL = os.environ.get("DJANGO_BASE_URL", "http://localhost:8080/")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "changeme")
 
 PRODUCTION = bool(os.environ.get("DJANGO_PRODUCTION", default=False))
 
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'drf_standardized_errors',
+    'drf_yasg',
     'corsheaders',
     'knox',
     'apps.whitelist',
