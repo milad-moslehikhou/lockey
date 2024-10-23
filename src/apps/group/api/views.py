@@ -5,11 +5,12 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 
 from apps.group.api.serializers import GroupSerializer, GroupModifySerializer, GroupMemberSerializer
 from apps.user.api.serializers import UserGetSerializer
 from apps.user.models import User
-from utils.permissions import IsSupperUser
+from utils.permissions import IsSupperUser, SAFE_METHODS
 
 
 class GroupViewSet(ModelViewSet):
@@ -25,6 +26,11 @@ class GroupViewSet(ModelViewSet):
         IsSupperUser
     ]
 
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:
+            return [IsAuthenticated()]
+        return super().get_permissions()
+    
     def create(self, request, *args, **kwargs):
         serializer = GroupModifySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

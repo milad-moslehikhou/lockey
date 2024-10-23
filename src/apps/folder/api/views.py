@@ -1,4 +1,4 @@
-from django.db.models import RestrictedError
+from django.db.models import Q, RestrictedError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 
 from apps.folder.models import Folder
 from apps.folder.api.serializers import FolderSerializer, FolderTreeSerializer
+from utils.permissions import SAFE_METHODS
 
 
 class FolderViewSet(ModelViewSet):
@@ -24,6 +25,16 @@ class FolderViewSet(ModelViewSet):
         DjangoModelPermissions
     ]
 
+    def get_queryset(self):
+        """
+        This view should return a list of all the public folders
+        or folders for the currently authenticated user.
+        """
+        user = self.request.user
+        if self.request.method in SAFE_METHODS and not user.is_superuser:
+            return Folder.objects.filter(Q(user=user) | Q(is_public=True)).order_by('name')
+        return Folder.objects.all().order_by('name')
+    
     @action(
         methods=['GET'],
         url_name="tree",

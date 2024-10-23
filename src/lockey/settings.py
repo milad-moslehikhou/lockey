@@ -30,7 +30,7 @@ PRODUCTION = bool(os.environ.get("DJANGO_PRODUCTION", default=False))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DJANGO_DEBUG", default=False))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOW_HOSTS", default=['127.0.0.1', 'localhost'])
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localhost").split(',')
 
 CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_CORS_ALLOWED_ORIGINS", default=['http://localhost:9000'])
 

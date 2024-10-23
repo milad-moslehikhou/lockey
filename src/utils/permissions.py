@@ -42,7 +42,7 @@ class CredentialGrantPermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        if request.method in ('HEAD', 'OPTIONS') or user.is_superuser:
+        if request.method in ('HEAD', 'OPTIONS') or user.is_superuser or obj.created_by == user:
             return True
         if request.method == 'GET':
             return CredentialGrant.objects.filter(

@@ -46,10 +46,14 @@ class AuditLogMiddleware:
     def __call__(self, request):
         username = request.user.username if request.user.username else 'anonymous'
         response = self.get_response(request)
+        client_ip = request.META.get('REMOTE_ADDR')
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            client_ip = x_forwarded_for.split(',')[0]
 
         _logger.info('{}@{} "{} {}" {}'.format(
             username,
-            request.META["REMOTE_ADDR"],
+            client_ip,
             request.method,
             request.get_full_path(),
             response.status_code
@@ -74,7 +78,10 @@ class AccessWhitelistMiddleware:
             )
             return self.get_response(request)
 
-        remote_ip = request.META['REMOTE_ADDR']
+        client_ip = request.META.get('REMOTE_ADDR')
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            client_ip = x_forwarded_for.split(',')[0]
         error = {
             'type': "client_error",
             'errors': [{'detail': "You are not allowed to reach the resources. Please contact administrator."}]
@@ -83,13 +90,13 @@ class AccessWhitelistMiddleware:
                 request.user, AnonymousUser):
             user = request.user
             if Whitelist.objects.filter(
-                Q(ip=remote_ip, user=user) | Q(ip=remote_ip, user=None)
+                Q(ip=client_ip, user=user) | Q(ip=client_ip, user=None)
             ).exists():
                 return self.get_response(request)
             else:
                 return HttpResponseForbidden(content=json.dumps(error))
         else:
-            if Whitelist.objects.filter(ip=remote_ip, user=None).exists():
+            if Whitelist.objects.filter(ip=client_ip, user=None).exists():
                 return self.get_response(request)
             else:
                 return HttpResponseForbidden(content=json.dumps(error))

@@ -35,10 +35,9 @@ class UserViewSet(ModelViewSet):
         return UserSerializer
 
     def get_permissions(self):
-        if self.get_view_name() == "Change userpassword":
+        if self.request.method in SAFE_METHODS or self.get_view_name() == "Change userpassword":
             return [IsAuthenticated()]
-        else:
-            return super().get_permissions()
+        return super().get_permissions()
 
     @action(
         methods=['GET'],
