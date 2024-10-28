@@ -12,13 +12,12 @@ from utils.permissions import SAFE_METHODS
 
 
 class FolderViewSet(ModelViewSet):
-    queryset = Folder.objects.all()
     serializer_class = FolderSerializer
 
     filterset_fields = ['is_public', 'parent', 'user']
     search_fields = None
     ordering_fields = ['id']
-    ordering = ['-id']
+    ordering = ['name']
 
     permission_classes = [
         IsAuthenticated,
@@ -32,8 +31,8 @@ class FolderViewSet(ModelViewSet):
         """
         user = self.request.user
         if self.request.method in SAFE_METHODS and not user.is_superuser:
-            return Folder.objects.filter(Q(user=user) | Q(is_public=True)).order_by('name')
-        return Folder.objects.all().order_by('name')
+            return Folder.objects.filter(Q(user=user) | Q(is_public=True))
+        return Folder.objects.all()
     
     @action(
         methods=['GET'],

@@ -28,7 +28,6 @@ class CredentialViewSet(ModelViewSet):
         'modified_by']
     search_fields = ['name', 'username', 'ip', 'uri']
     ordering_fields = '__all__'
-    ordering = ['-id']
 
     permission_classes = [
         IsAuthenticated,
