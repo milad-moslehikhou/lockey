@@ -45,15 +45,20 @@ class CredentialViewSet(ModelViewSet):
             CredentialShare.objects.filter(until__lt=datetime.now()).delete()
             user = self.request.user
             return Credential.objects.filter(
-                Q(created_by=user) | Q(shares__shared_with=user)
-            ).annotate(favorite=FilteredRelation(
-                'favorites', condition=Q(favorites__user=user)
-            )
-            ).annotate(is_favorite=Case(
-                When(favorite__isnull=True, then=Value(False)),
-                default=Value(True)
-            )
-            )
+                Q(
+                    created_by=user) | Q(
+                    shares__shared_with=user) | Q(
+                    grants__user=user) | Q(
+                    grants__group__in=user.groups.all())).annotate(
+                        favorite=FilteredRelation(
+                            'favorites',
+                            condition=Q(
+                                favorites__user=user))).annotate(
+                                    is_favorite=Case(
+                                        When(
+                                            favorite__isnull=True,
+                                            then=Value(False)),
+                                        default=Value(True)))
 
         return Credential.objects.all()
 

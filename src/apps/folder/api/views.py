@@ -33,7 +33,7 @@ class FolderViewSet(ModelViewSet):
         if self.request.method in SAFE_METHODS and not user.is_superuser:
             return Folder.objects.filter(Q(user=user) | Q(is_public=True))
         return Folder.objects.all()
-    
+
     @action(
         methods=['GET'],
         url_name="tree",

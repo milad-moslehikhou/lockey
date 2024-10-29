@@ -30,7 +30,7 @@ class GroupViewSet(ModelViewSet):
         if self.request.method in SAFE_METHODS:
             return [IsAuthenticated()]
         return super().get_permissions()
-    
+
     def create(self, request, *args, **kwargs):
         serializer = GroupModifySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
