@@ -28,7 +28,7 @@ class Command(BaseCommand):
                 return
             category = uuid.uuid4()
             for credential in credentials:
-                char_choices = random.shuffle(list(settings.PASSWORD_ALLOWED_CHARS.split))
+                char_choices = random.shuffle(list(settings.PASSWORD_ALLOWED_CHARS))
                 password = ''.join(secrets.choice(char_choices) for i in range(settings.PASSWORD_LENGHT))
                 secret = CredentialSecret(
                     password=password,
