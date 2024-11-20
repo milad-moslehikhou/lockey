@@ -102,6 +102,10 @@ class CredentialSecret(models.Model):
     expire_at = models.DateTimeField(
         verbose_name=_("expire at")
     )
+    category = models.UUIDField(
+        verbose_name=_("category"),
+        null=True
+    )
     credential = models.ForeignKey(
         Credential,
         on_delete=models.CASCADE,

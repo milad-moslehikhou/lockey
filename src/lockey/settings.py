@@ -34,6 +34,10 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localh
 
 CORS_ALLOWED_ORIGINS = os.environ.get("DJANGO_CORS_ALLOWED_ORIGINS", default=['http://localhost:9000'])
 
+PASSWORD_ALLOWED_CHARS = os.environ.get("PASSWORD_ALLOWED_CHARS", default="QWERTYUPASDFHKLZXCVB23456789!@#$%^&*()")
+PASSWORD_LENGHT = os.environ.get("PASSWORD_LENGHT", default=12)
+
+
 # Application definition
 INSTALLED_APPS = [
     'django_extensions',  # extra admin commands (devenv)
