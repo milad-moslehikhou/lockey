@@ -10,7 +10,7 @@ from utils.storage import ImageStorage
 
 
 class UserManager(BaseUserManager):
-    def create(self, username, password, **extra_fields):
+    def create(self, username, password='pass%123', **extra_fields):
         """
         Create and save a user with the given fields.
         """
@@ -53,6 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(
         _("password"),
         max_length=128,
+        null=True,
         validators=[validate_password])
     is_active = models.BooleanField(
         verbose_name=_("active"),
