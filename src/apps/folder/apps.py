@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class FolderConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.folder'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "apps.folder"

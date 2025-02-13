@@ -1,7 +1,6 @@
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 from apps.credential.models import CredentialGrant
 
@@ -42,15 +41,14 @@ class CredentialGrantPermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        if request.method in ('HEAD', 'OPTIONS') or user.is_superuser or obj.created_by == user:
+        if request.method in ("HEAD", "OPTIONS") or user.is_superuser or obj.created_by == user:
             return True
-        if request.method == 'GET':
+        if request.method == "GET":
             return CredentialGrant.objects.filter(
-                Q(credential=obj) &
-                (Q(group__in=user.groups.all()) | Q(user=user))
+                Q(credential=obj) & (Q(group__in=user.groups.all()) | Q(user=user))
             ).exists()
         return CredentialGrant.objects.filter(
-            Q(credential=obj) &
-            Q(action=CredentialGrant.Action.MODIFY) &
-            (Q(group__in=user.groups.all()) | Q(user=user))
+            Q(credential=obj)
+            & Q(action=CredentialGrant.Action.MODIFY)
+            & (Q(group__in=user.groups.all()) | Q(user=user))
         ).exists()

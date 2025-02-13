@@ -1,19 +1,29 @@
-[tool.autopep8]
-max_line_length = 120
-ignore = ""
-in-place = true
-recursive = true
-aggressive = 2
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+indent-width = 4
 
-[tool.flake8]
-exclude = [
-    "__pycache__/",
-    ".git/",
-    ".venv/",
-    "venv*/",
-    "*/migrations/",
-    "settings.py"
-    ]
-max_line_length = 120
-statistics = true
-count = true
+[tool.ruff.format]
+quote-style = "double"
+line-ending = "lf"
+indent-style = "space"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle (formatting errors)
+    "F",    # Pyflakes (basic errors)
+    "I",    # isort (import sorting)
+    "N",    # pep8-naming (naming conventions)
+    "DJ",   # flake8-django (Django-specific linting)
+    "PL",   # pylint (general best practices)
+    "RUF",  # ruff-specific optimizations
+]
+ignore = [
+    "RUF012",
+]
+
+
+[tool.ruff.lint.per-file-ignores]
+"*/migrations/*.py" = ["ALL"]  # Ignore all checks in Django migration files
+
+

@@ -5,4 +5,4 @@ from rest_framework import serializers
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
-        fields = ['id', 'content_type', 'codename', 'name']
+        fields = ["id", "content_type", "codename", "name"]

@@ -7,12 +7,12 @@ from apps.folder.models import Folder
 class FolderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Folder
-        fields = '__all__'
+        fields = "__all__"
 
 
 class FolderChildSerializer(serializers.Serializer):
     folder = FolderSerializer()
-    children = serializers.ListField(child=RecursiveField())
+    children = serializers.ListField(child=RecursiveField("FolderSerializer"))
 
 
 class FolderTreeSerializer(serializers.Serializer):

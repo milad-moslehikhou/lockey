@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements-prd.txt .
 
 RUN apk add --update --no-cache --virtual dependencies  build-base openssl-dev libffi-dev mariadb-dev && \
-    pip install --no-cache-dir -r requirements-prd.txt && \
+    pip install --no-cache-dir -r requirements.txt && \
     apk del dependencies
 RUN apk add --no-cache mariadb-connector-c
 

@@ -6,4 +6,4 @@ from apps.whitelist.models import Whitelist
 class WhitelistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Whitelist
-        fields = '__all__'
+        fields = "__all__"
