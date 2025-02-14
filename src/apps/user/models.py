@@ -66,6 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
     )
     date_joined = models.DateTimeField(verbose_name=_("date joined"), auto_now_add=True)
+    mobile = models.CharField(verbose_name=_("mobile number"), max_length=11, blank=True)
     first_name = models.CharField(verbose_name=_("first name"), max_length=150, blank=True)
     last_name = models.CharField(verbose_name=_("last name"), max_length=150, blank=True)
     avatar = models.ImageField(verbose_name=_("avatar"), upload_to="avatars/", storage=ImageStorage(), null=True)
