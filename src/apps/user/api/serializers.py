@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ["password"]
+        exclude = ["password", "otp_secret"]
 
 
 class UserSetPasswordSerializer(serializers.Serializer):

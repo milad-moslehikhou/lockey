@@ -60,6 +60,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name=_("force change password"),
         default=True,
     )
+    otp_secret = models.CharField(
+        verbose_name=_("OTP secret"),
+        max_length=32,
+        blank=True,
+    )
     date_joined = models.DateTimeField(verbose_name=_("date joined"), auto_now_add=True)
     first_name = models.CharField(verbose_name=_("first name"), max_length=150, blank=True)
     last_name = models.CharField(verbose_name=_("last name"), max_length=150, blank=True)
