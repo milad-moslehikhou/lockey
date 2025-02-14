@@ -1,4 +1,4 @@
-from datetime import datetime
+import secrets
 
 from django.db.models import Case, FilteredRelation, Q, Value, When
 from django.shortcuts import get_object_or_404
@@ -10,13 +10,19 @@ from rest_framework.views import status
 from rest_framework.viewsets import ModelViewSet
 
 from apps.credential.api.serializers import (
+    CredentialGrantRequestSerializer,
     CredentialGrantSerializer,
     CredentialModifySerializer,
     CredentialSecretSerializer,
     CredentialSerializer,
-    CredentialShareSerializer,
 )
-from apps.credential.models import Credential, CredentialFavorite, CredentialSecret, CredentialShare
+from apps.credential.models import (
+    Credential,
+    CredentialFavorite,
+    CredentialGrantRequest,
+    CredentialSecret,
+)
+from apps.user.models import User
 from utils.permissions import CredentialGrantPermission
 
 
@@ -37,8 +43,6 @@ class CredentialViewSet(ModelViewSet):
             return Credential.objects.none()
 
         if self.request.method in SAFE_METHODS:
-            # Delete credential share that expired on every get request
-            CredentialShare.objects.filter(until__lt=datetime.now()).delete()
             user = self.request.user
             return (
                 Credential.objects.filter(
@@ -86,26 +90,21 @@ class CredentialViewSet(ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(status=status.HTTP_201_CREATED, headers=headers)
 
-    @action(methods=["GET", "PATCH"], url_name="share", url_path="share", detail=True)
-    def share(self, request, pk: int | None = None):
+    @action(methods=["POST"], url_name="grant-request", url_path="grant-request", detail=True)
+    def grant_request(self, request, pk: int | None = None):
         credential = get_object_or_404(Credential, pk=pk)
-        if request.method == "GET":
-            shares = credential.shares.all()
-            serializer = CredentialShareSerializer(shares, many=True)
-            return Response(serializer.data)
-        if request.method == "PATCH":
-            credential.shares.all().delete()
-            serializer = CredentialShareSerializer(data=request.data, many=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            headers = self.get_success_headers(serializer.data)
-            return Response(status=status.HTTP_201_CREATED, headers=headers)
-
-    @action(methods=["GET"], url_name="all-shared", url_path="all-shared", detail=False)
-    def get_all_shared(self, request):
-        shares = CredentialShare.objects.all()
-        serializer = CredentialShareSerializer(shares, many=True)
-        return Response(serializer.data)
+        user: User = request.user
+        serializer = CredentialGrantRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        respondent = serializer.validated_data.get("respondent")
+        random_secret = secrets.token_hex(8)
+        CredentialGrantRequest(
+            credential=credential,
+            requester=user,
+            respondent=respondent,
+            secret=random_secret,
+        ).save()
+        return Response(status=status.HTTP_201_CREATED)
 
     @action(methods=["GET", "POST"], url_name="secret", url_path="secret", detail=True)
     def secret(self, request, pk: int | None = None):

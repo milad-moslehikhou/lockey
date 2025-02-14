@@ -4,8 +4,8 @@ from apps.credential.models import (
     Credential,
     CredentialFavorite,
     CredentialGrant,
+    CredentialGrantRequest,
     CredentialSecret,
-    CredentialShare,
 )
 
 
@@ -27,6 +27,12 @@ class CredentialGrantSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class CredentialGrantRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CredentialGrantRequest
+        fields = ["respondent"]
+
+
 class CredentialSerializer(serializers.ModelSerializer):
     is_favorite = serializers.BooleanField()
 
@@ -38,10 +44,4 @@ class CredentialSerializer(serializers.ModelSerializer):
 class CredentialModifySerializer(serializers.ModelSerializer):
     class Meta:
         model = Credential
-        fields = "__all__"
-
-
-class CredentialShareSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CredentialShare
         fields = "__all__"

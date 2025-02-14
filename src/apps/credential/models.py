@@ -18,7 +18,7 @@ class Credential(models.Model):
     ip = models.CharField(verbose_name=_("ip address"), max_length=15, blank=True)
     uri = models.URLField(verbose_name=_("uri"), blank=True)
     importancy = models.CharField(
-        verbose_name=_("importancy"), max_length=150, choices=Importancy.choices, default=Importancy.LOW
+        verbose_name=_("importancy"), max_length=8, choices=Importancy.choices, default=Importancy.LOW
     )
     auto_genpass = models.BooleanField(verbose_name=_("auto generate"), default=False)
     tags = models.CharField(verbose_name=_("tags"), max_length=255, blank=True)
@@ -110,6 +110,7 @@ class CredentialGrant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="grants", null=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="grants", null=True)
     action = models.CharField(verbose_name=_("action"), max_length=150, choices=Action.choices, default=Action.VIEW)
+    until = models.DateTimeField(verbose_name=_("granted until"), null=True)
 
     class Meta:
         constraints = [
@@ -121,23 +122,49 @@ class CredentialGrant(models.Model):
         return f"{self.group} {self.user} {self.credential} {self.action}"
 
 
-class CredentialShare(models.Model):
+class CredentialGrantRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "PENDING", _("Pending")
+        SENT = "SENT", _("Sent")
+        DONE = "DONE", _("Done")
+
     credential = models.ForeignKey(
         Credential,
         on_delete=models.CASCADE,
-        related_name="shares",
+        related_name="grant_requests",
     )
-    shared_by = models.ForeignKey(
-        User, db_column="shared_by", related_name="shares_by_me", on_delete=models.CASCADE, verbose_name=_("shared by")
+
+    secret = models.CharField(
+        verbose_name=_("secret"),
+        max_length=320,
+        blank=False,
     )
-    shared_with = models.ForeignKey(
+    requester = models.ForeignKey(
         User,
-        db_column="shared_with",
-        related_name="shares_with_me",
+        related_name="grant_requests",
         on_delete=models.CASCADE,
-        verbose_name=_("shared with"),
+        verbose_name=_("requester"),
     )
-    until = models.DateTimeField(verbose_name=_("shared until"))
+    respondent = models.ForeignKey(
+        User,
+        related_name="grant_response",
+        on_delete=models.CASCADE,
+        verbose_name=_("respondent"),
+    )
+    status = models.CharField(
+        verbose_name=_("status"),
+        max_length=8,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
+    created_at = models.DateTimeField(
+        verbose_name=_("created at"),
+        auto_now_add=True,
+    )
 
     def __str__(self):
-        return f"{self.credential} shared by: {self.shared_by} with: {self.shared_with} until: {self.until}"
+        return self.request_string
+
+    @property
+    def request_string(self):
+        return f"{self.requester}:{self.credential}:{self.secret}"
