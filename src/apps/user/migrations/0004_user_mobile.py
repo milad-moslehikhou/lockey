@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('user', '0003_remove_user_is_otp_enabled'),
+        ("user", "0003_remove_user_is_otp_enabled"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='mobile',
-            field=models.CharField(blank=True, max_length=11, verbose_name='mobile number'),
+            model_name="user",
+            name="mobile",
+            field=models.CharField(blank=True, max_length=11, verbose_name="mobile number"),
         ),
     ]
