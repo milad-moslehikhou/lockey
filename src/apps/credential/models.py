@@ -167,4 +167,4 @@ class CredentialGrantRequest(models.Model):
 
     @property
     def request_string(self):
-        return f"{self.requester}:{self.credential}:{self.secret}"
+        return f"{self.pk}:{self.requester}:{self.credential}:{self.secret}"

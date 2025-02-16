@@ -52,11 +52,7 @@ class AuditLogMiddleware:
         if x_forwarded_for:
             client_ip = x_forwarded_for.split(",")[0]
 
-        _logger.info(
-            '{}@{} "{} {}" {}'.format(
-                username, client_ip, request.method, request.get_full_path(), response.status_code
-            )
-        )
+        _logger.info(f'{username}@{client_ip} "{request.method} {request.get_full_path()}" {response.status_code}')
         return response
 
 
@@ -112,8 +108,9 @@ class PasswordExpirationMiddleware:
                     messages.warning(
                         request,
                         (
-                            "It has exceeded {} and the password cannot be changed. Please change it before continuing."
-                        ).format(self.expiration_days.days),
+                            f"It has exceeded {self.expiration_days.days} and the password cannot be changed. "
+                            "Please change it before continuing."
+                        ),
                         fail_silently=True,
                     )
 

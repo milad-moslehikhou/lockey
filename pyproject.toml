@@ -2,6 +2,28 @@
 target-version = "py312"
 line-length = 120
 indent-width = 4
+exclude = [
+    ".git",
+    ".git-rewrite",
+    ".mypy_cache",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "venv",
+    "migrations",
+    "manage.py",
+    "settings.py",
+    ]
 
 [tool.ruff.format]
 quote-style = "double"

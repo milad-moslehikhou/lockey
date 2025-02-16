@@ -18,7 +18,7 @@ class LoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
 
-    def post(self, request, format=None):
+    def post(self, request, _format=None):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data["username"]
@@ -49,7 +49,7 @@ class VerifyOtpView(KnoxLoginView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = VerifyOtpSerializer
 
-    def post(self, request, format=None):
+    def post(self, request, _format=None):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user: User = serializer.validated_data["user"]
@@ -68,7 +68,7 @@ class EnableOtpView(APIView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
 
-    def post(self, request, format=None):
+    def post(self, request, _format=None):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data["username"]
