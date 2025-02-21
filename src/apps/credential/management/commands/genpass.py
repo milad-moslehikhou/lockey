@@ -23,9 +23,7 @@ class Command(BaseCommand):
             if len(credentials) == 0:
                 self.stdout.write("No credential found!")
                 return
-            self.stdout.write(
-                "There are {} credential that marked for auto generate password,".format(len(credentials))
-            )
+            self.stdout.write(f"There are {len(credentials)} credential that marked for auto generate password,")
             user_input = input("Are you sure to continue [yes|no]? ")
             if user_input != "yes":
                 return
@@ -42,6 +40,6 @@ class Command(BaseCommand):
                     created_by=user,
                 )
                 secret.save()
-            self.stdout.write(self.style.SUCCESS("All new secrets categorized under {}".format(category)))
+            self.stdout.write(self.style.SUCCESS(f"All new secrets categorized under {category}"))
         except Exception as e:
-            raise CommandError(e)
+            raise CommandError(e) from None

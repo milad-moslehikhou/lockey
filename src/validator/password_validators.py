@@ -38,14 +38,15 @@ class ComplexityValidator:
             password_valid = False
 
         if not password_valid:
+            msg = f"This password is too simple. It must contain at least {', '.join(errors)}."
             raise ValidationError(
-                f"This password is too simple. It must contain at least {', '.join(errors)}.",
+                msg,
                 code="password_complexity",
             )
 
     def get_help_text(self):
         requirements = []
-        for attr, regex, name in self.min_chars_of_each_type:
+        for attr, __, name in self.min_chars_of_each_type:
             required = getattr(self, attr)
             if required:
                 requirements.append(f"{required} {name} characters")
@@ -56,7 +57,8 @@ class ComplexityValidator:
 class ReusedValidator:
     def __init__(self, record_length=3):
         if record_length <= 0:
-            raise ValueError("record_length must be larger than 0.")
+            msg = "record_length must be larger than 0."
+            raise ValueError(msg)
         self.record_length = record_length
 
     def validate(self, password, user=None):

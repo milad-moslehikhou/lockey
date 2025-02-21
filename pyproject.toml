@@ -2,6 +2,28 @@
 target-version = "py312"
 line-length = 120
 indent-width = 4
+exclude = [
+    ".git",
+    ".git-rewrite",
+    ".mypy_cache",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "venv",
+    "migrations",
+    "manage.py",
+    "settings.py",
+    ]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -10,13 +32,26 @@ indent-style = "space"
 
 [tool.ruff.lint]
 select = [
-    "E",    # pycodestyle (formatting errors)
+    "A",   # Flake8-builtins: avoid shadowing Python built-ins
+    "B",   # Flake8-bugbear: best practices and potential errors
+    "E",   # Pycodestyle: PEP 8 rules
     "F",    # Pyflakes (basic errors)
-    "I",    # isort (import sorting)
-    "N",    # pep8-naming (naming conventions)
+    "N",   # Naming: PEP 8 naming 
+    "I",   # Import sorting (isort compatibility)
+    "W",   # Pycodestyle warnings (e.g., line breaks, indentation)
+    "S",   # Security (Bandit-inspired checks)
+    "C90", # Cyclomatic complexity check
     "DJ",   # flake8-django (Django-specific linting)
     "PL",   # pylint (general best practices)
-    "RUF",  # ruff-specific optimizations
+    "EM",  # Flake8-errmsg: format nice error messages
+    "PT",  # Pytest plugin rules (optional if testing with pytest)
+    "UP",  # Pyupgrade: modern Python idioms
+    "RUF", # Ruff-specific rules
+    "TRY", # Prevent exception handling anti patterns
+    "T20", # Flake8 print plugin
+    "SIM", # Flake8 simplify code plugin
+    "PTH", # Flake8 use pathlib: finding use of functions that can be replaced by pathlib module
+    "ERA", # Eradicate removes commented-out code from Python files
 ]
 ignore = [
     "RUF012",

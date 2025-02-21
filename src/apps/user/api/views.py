@@ -82,10 +82,10 @@ class UserViewSet(ModelViewSet):
         try:
             validate_password(new_password1, user)
         except DjangoValidationError as e:
-            raise ValidationError({"new_password1": "\n".join(e)})
+            raise ValidationError({"new_password1": "\n".join(e)}) from None
         new_password2 = serializer.validated_data.pop("new_password2")
         if new_password1 != new_password2:
-            raise ValidationError({"new_password2": "Password do not match."})
+            raise ValidationError({"new_password2": "Password do not match."}) from None
         user.set_password(new_password1)
         user.force_change_pass = False
         user.save()

@@ -33,6 +33,11 @@ class CredentialGrantRequestSerializer(serializers.ModelSerializer):
         fields = ["respondent"]
 
 
+class CredentialGrantResponseSerializer(serializers.Serializer):
+    response_string = serializers.CharField()
+    sender = serializers.CharField()
+
+
 class CredentialSerializer(serializers.ModelSerializer):
     is_favorite = serializers.BooleanField()
 

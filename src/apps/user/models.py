@@ -14,12 +14,13 @@ from utils.storage import ImageStorage
 
 
 class UserManager(BaseUserManager):
-    def create(self, username, password="pass%123", **extra_fields):
+    def create(self, username, password="pass%123", **extra_fields):  # noqa: S107
         """
         Create and save a user with the given fields.
         """
         if not username:
-            raise ValueError("The given username must be set")
+            msg = "The given username must be set"
+            raise ValueError(msg)
         username = User.normalize_username(username)
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
@@ -85,8 +86,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Return the first_name plus the last_name, with a space in between.
         """
-        full_name = "%s %s" % (self.first_name, self.last_name)
-        return full_name.strip()
+        return f"{self.first_name} {self.last_name}".strip()
 
     @property
     def short_name(self):

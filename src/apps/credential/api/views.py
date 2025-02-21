@@ -11,6 +11,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from apps.credential.api.serializers import (
     CredentialGrantRequestSerializer,
+    CredentialGrantResponseSerializer,
     CredentialGrantSerializer,
     CredentialModifySerializer,
     CredentialSecretSerializer,
@@ -19,6 +20,7 @@ from apps.credential.api.serializers import (
 from apps.credential.models import (
     Credential,
     CredentialFavorite,
+    CredentialGrant,
     CredentialGrantRequest,
     CredentialSecret,
 )
@@ -105,6 +107,24 @@ class CredentialViewSet(ModelViewSet):
             secret=random_secret,
         ).save()
         return Response(status=status.HTTP_201_CREATED)
+
+    @action(methods=["POST"], url_name="grant-response", url_path="grant-response", detail=False)
+    def grant_response(self, request):
+        serializer = CredentialGrantResponseSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        response_string = serializer.validated_data.get("response_string")
+        sender = serializer.validated_data.get("sender")
+        pk = response_string.split(":")[0]
+        grant_request = get_object_or_404(CredentialGrantRequest, pk=pk)
+        if grant_request.respondent == sender and grant_request.request_string == response_string:
+            grant_request.status = CredentialGrantRequest.Status.DONE
+            grant_request.save()
+            CredentialGrant(
+                credential=grant_request.credential,
+                user=grant_request.requester,
+            ).save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=["GET", "POST"], url_name="secret", url_path="secret", detail=True)
     def secret(self, request, pk: int | None = None):
