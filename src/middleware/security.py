@@ -2,7 +2,6 @@ import json
 import logging
 from datetime import timedelta
 
-import environ
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import AnonymousUser
@@ -11,29 +10,10 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.urls import resolve, reverse
 from django.utils import timezone
-from knox.auth import TokenAuthentication
-from rest_framework.exceptions import AuthenticationFailed
 
 from apps.whitelist.models import Whitelist
 
 _logger = logging.getLogger("lockey.security")
-
-
-class AuthenticationMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        user = None
-        try:
-            auth = TokenAuthentication()
-            user, _ = auth.authenticate(request=request)
-        except (TypeError, AuthenticationFailed):
-            pass
-
-        request.user = user or AnonymousUser()
-        response = self.get_response(request)
-        return response
 
 
 class AuditLogMiddleware:
@@ -71,9 +51,8 @@ class AccessWhitelistMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        env = environ.Env()
-        if env.bool("LOCKEY_ENABLE_WHITELIST", True):
-            _logger.debug("Access whitelist currently is disabled, for enable there set LOCKEY_ENABLE_WHITELIST=true")
+        if getattr(settings, "LOCKEY_DISABLE_WHITELIST", False):
+            _logger.debug("Access whitelist currently is disabled, for enable there set LOCKEY_DISABLE_WHITELIST=false")
             return self.get_response(request)
 
         client_ip = request.META.get("REMOTE_ADDR")

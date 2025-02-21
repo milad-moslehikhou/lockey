@@ -1,10 +1,14 @@
+import uuid
 from typing import Any
 
+import pyotp
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.cache import cache
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from utils.storage import ImageStorage
 
@@ -88,6 +92,28 @@ class User(AbstractBaseUser, PermissionsMixin):
     def short_name(self):
         """Return the short name for the user."""
         return self.first_name
+
+    def generate_otp_secret(self):
+        self.otp_secret = pyotp.random_base32()
+        self.save()
+        return self.otp_secret
+
+    def generate_otp_session(self):
+        otp_session = uuid.uuid4()
+        cache.set(otp_session, self.pk, timeout=120)
+        return {"otp_session": otp_session}
+
+    def generate_tokens(self):
+        refresh = RefreshToken.for_user(self)
+        access = str(refresh.access_token)
+        return refresh, access
+
+    def get_otp_provisioning_uri(self):
+        return pyotp.totp.TOTP(self.otp_secret).provisioning_uri(self.username, issuer_name="Lockey")
+
+    def verify_otp(self, otp_secret):
+        totp = pyotp.TOTP(self.otp_secret)
+        return totp.verify(otp_secret)
 
 
 class PasswordRecordManager(models.Manager):

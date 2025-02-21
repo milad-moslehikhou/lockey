@@ -11,52 +11,51 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
-from datetime import timedelta
 from pathlib import Path
 
 import environ
 
-# Read .env file if present
-environ.Env.read_env()
-env = environ.Env()
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-BASE_URL = os.getenv("DJANGO_BASE_URL", default="http://localhost:8080/")
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / "../.env")
+
+BASE_URL = env.str("DJANGO_BASE_URL", default="http://localhost:8080/")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", default="changeme")
+SECRET_KEY = env.str("DJANGO_SECRET_KEY", default="changeme")
 
 PRODUCTION = env.bool("DJANGO_PRODUCTION", default=False)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DJANGO_DEBUG", default=False)
+DEBUG = env.bool("DJANGO_DEBUG", default=False) or not PRODUCTION
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 CORS_ALLOWED_ORIGINS = env.list("DJANGO_CORS_ALLOWED_ORIGINS", default=["http://localhost:9000"])
 
-PASSWORD_ALLOWED_CHARS = os.getenv("PASSWORD_ALLOWED_CHARS", default="QWERTYUPASDFHKLZXCVB23456789!?@#$%^&*()")
+PASSWORD_ALLOWED_CHARS = env.str("PASSWORD_ALLOWED_CHARS", default="QWERTYUPASDFHKLZXCVB23456789!?@#$%^&*()")
 PASSWORD_LENGHT = env.int("PASSWORD_LENGHT", default=12)
 
+LOCKEY_DISABLE_WHITELIST = env.bool("LOCKEY_DISABLE_WHITELIST", default=False) or not PRODUCTION
 
 # Application definition
 INSTALLED_APPS = [
     "django_extensions",  # extra admin commands (devenv)
+    "django.contrib.sessions",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.humanize",
     "django_filters",
     "rest_framework",
+    "rest_framework_simplejwt",
     "drf_spectacular",
     "drf_standardized_errors",
     "corsheaders",
-    "knox",
     "apps.whitelist",
     "apps.permission",
     "apps.group",
@@ -69,10 +68,11 @@ AUTH_USER_MODEL = "user.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "middleware.security.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
     "middleware.security.AuditLogMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "middleware.security.AccessWhitelistMiddleware",
@@ -89,11 +89,11 @@ WSGI_APPLICATION = "lockey.wsgi.application"
 
 DATABASE_PRD = {
     "ENGINE": "django.db.backends.mysql",
-    "NAME": os.getenv("DB_NAME", default="lockeydb"),
-    "USER": os.getenv("DB_USER", default="admin"),
-    "PASSWORD": os.getenv("DB_PASS", default="admin"),
-    "HOST": os.getenv("DB_HOST", default="localhost"),
-    "PORT": os.getenv("DB_PORT", default="3306"),
+    "NAME": env.str("DB_NAME", default="lockeydb"),
+    "USER": env.str("DB_USER", default="admin"),
+    "PASSWORD": env.str("DB_PASS", default="admin"),
+    "HOST": env.str("DB_HOST", default="localhost"),
+    "PORT": env.str("DB_PORT", default="3306"),
 }
 DATABASE_DEV = {
     "ENGINE": "django.db.backends.sqlite3",
@@ -151,7 +151,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "knox.auth.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
@@ -159,21 +159,12 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ],
     # 'DEFAULT_PAGINATION_CLASS': 'utils.pagination.Pagination',
-    # 'PAGE_SIZE': os.getenv('DJANGO_PAGE_SIZE', 5),
+    # 'PAGE_SIZE': env.str('DJANGO_PAGE_SIZE', 5),
     "DEFAULT_METADATA_CLASS": "rest_framework.metadata.SimpleMetadata",
     "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
 }
 
 DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
-
-REST_KNOX = {
-    "SECURE_HASH_ALGORITHM": "cryptography.hazmat.primitives.hashes.SHA512",
-    "AUTH_TOKEN_CHARACTER_LENGTH": 64,
-    "TOKEN_TTL": timedelta(hours=10),
-    "USER_SERIALIZER": "apps.user.api.serializers.UserGetSerializer",
-    "TOKEN_LIMIT_PER_USER": 10,
-    "AUTO_REFRESH": True,
-}
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Lockey API",
@@ -203,27 +194,27 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "level": env.str("DJANGO_LOG_LEVEL", "INFO"),
             "propagate": False,
         },
         "django.server": {
             "handlers": ["console"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG" if DEBUG else "INFO"),
+            "level": env.str("DJANGO_LOG_LEVEL", "DEBUG" if DEBUG else "INFO"),
             "propagate": False,
         },
         "django.db.backends": {
             "handlers": ["console"],
-            "level": os.getenv("ORM_LOG_LEVEL", "DEBUG" if DEBUG else "INFO"),
+            "level": env.str("ORM_LOG_LEVEL", "DEBUG" if DEBUG else "INFO"),
             "propagate": False,
         },
         "lockey": {
             "handlers": ["console"],
-            "level": os.getenv("LOCKEY_LOG_LEVEL", "DEBUG" if DEBUG else "INFO"),
+            "level": env.str("LOCKEY_LOG_LEVEL", "DEBUG" if DEBUG else "INFO"),
             "propagate": False,
         },
         "lockey.security": {
             "handlers": ["console"],
-            "level": os.getenv("LOCKEY_LOG_LEVEL", "DEBUG" if DEBUG else "INFO"),
+            "level": env.str("LOCKEY_LOG_LEVEL", "DEBUG" if DEBUG else "INFO"),
             "propagate": False,
         },
     },
