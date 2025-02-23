@@ -101,7 +101,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def generate_otp_session(self):
         otp_session = uuid.uuid4()
         cache.set(otp_session, self.pk, timeout=120)
-        return {"otp_session": otp_session}
+        return {"user": self, "otp_session": otp_session}
 
     def generate_tokens(self):
         refresh = RefreshToken.for_user(self)
