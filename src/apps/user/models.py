@@ -8,6 +8,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.cache import cache
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django_cryptography.fields import encrypt
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from utils.storage import ImageStorage
@@ -65,10 +66,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name=_("force change password"),
         default=True,
     )
-    otp_secret = models.CharField(
-        verbose_name=_("OTP secret"),
-        max_length=32,
-        blank=True,
+    otp_secret = encrypt(
+        models.CharField(
+            verbose_name=_("OTP secret"),
+            max_length=32,
+            blank=True,
+        )
     )
     date_joined = models.DateTimeField(verbose_name=_("date joined"), auto_now_add=True)
     mobile = models.CharField(verbose_name=_("mobile number"), max_length=11, blank=True)
@@ -101,7 +104,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def generate_otp_session(self):
         otp_session = uuid.uuid4()
         cache.set(otp_session, self.pk, timeout=120)
-        return {"user": self, "otp_session": otp_session}
+        return otp_session
 
     def generate_tokens(self):
         refresh = RefreshToken.for_user(self)
@@ -111,9 +114,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_otp_provisioning_uri(self):
         return pyotp.totp.TOTP(self.otp_secret).provisioning_uri(self.username, issuer_name="Lockey")
 
-    def verify_otp(self, otp_secret):
+    def verify_otp(self, otp_code):
         totp = pyotp.TOTP(self.otp_secret)
-        return totp.verify(otp_secret)
+        return totp.verify(otp_code)
 
 
 class PasswordRecordManager(models.Manager):

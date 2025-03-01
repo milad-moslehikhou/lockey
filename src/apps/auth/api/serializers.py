@@ -1,8 +1,6 @@
 from django.contrib.auth.models import Permission
 from rest_framework import serializers
 
-from apps.user.models import User
-
 
 class EmptySerializer(serializers.Serializer):
     """An empty serializer for views that do not require input/output"""
@@ -13,16 +11,14 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=128, allow_blank=False)
 
 
-class VerifyOtpSerializer(serializers.ModelSerializer):
+class VerifyOtpSerializer(serializers.Serializer):
     otp_session = serializers.UUIDField()
-
-    class Meta:
-        model = User
-        fields = ["otp_secret", "otp_session"]
+    otp_code = serializers.CharField(min_length=6, max_length=6)
 
 
 class EnableOtpSerializer(serializers.Serializer):
     otp_session = serializers.UUIDField()
+    regenerate = serializers.BooleanField(default=False)
 
 
 class PermissionSerializer(serializers.ModelSerializer):

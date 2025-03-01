@@ -36,7 +36,7 @@ DEBUG = env.bool("DJANGO_DEBUG", default=False) or not PRODUCTION
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
-CORS_ALLOWED_ORIGINS = env.list("DJANGO_CORS_ALLOWED_ORIGINS", default=["http://localhost:9000"])
+CORS_ALLOWED_ORIGINS = env.list("DJANGO_CORS_ALLOWED_ORIGINS", default=["http://localhost:3000"])
 
 PASSWORD_ALLOWED_CHARS = env.str("PASSWORD_ALLOWED_CHARS", default="QWERTYUPASDFHKLZXCVB23456789!?@#$%^&*()")
 PASSWORD_LENGHT = env.int("PASSWORD_LENGHT", default=12)
@@ -179,7 +179,6 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "default": {
-            "()": "utils.logging.ColoredFormatter",
             "format": "%(asctime)s.%(msecs)03d %(levelname)-8s [%(process)d-%(thread)d] [%(name)s] %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },

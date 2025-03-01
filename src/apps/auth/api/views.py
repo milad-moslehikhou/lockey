@@ -8,7 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenRefreshView
 
+from apps.user.api.serializers import UserGetSerializer
 from apps.user.models import User
+from utils.responses import ClientErrorResponse
 
 from .serializers import EmptySerializer, EnableOtpSerializer, LoginSerializer, VerifyOtpSerializer
 
@@ -25,14 +27,13 @@ class LoginView(APIView):
         password = serializer.validated_data["password"]
         user: User = authenticate(request, username=username, password=password)
         if not user:
-            return Response(
-                {"non_field_errors": ["Invalid username or password"]},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            return ClientErrorResponse("Invalid username or password", status.HTTP_401_UNAUTHORIZED)
+        serializer = UserGetSerializer(user)
         otp_session = user.generate_otp_session()
+        content = {"user": serializer.data, "otp_session": otp_session}
         if not user.otp_secret:
-            return Response(otp_session, status=status.HTTP_202_ACCEPTED)
-        return Response(otp_session, status=status.HTTP_200_OK)
+            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response(content, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=["Auth"], responses={204: None})
@@ -52,16 +53,16 @@ class VerifyOtpView(APIView):
     def post(self, request, _format=None):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        otp_secret = serializer.validated_data["otp_secret"]
+        otp_code = serializer.validated_data["otp_code"]
         otp_session = serializer.validated_data["otp_session"]
         user_id = cache.get(otp_session)
         if not user_id:
-            return Response({"non_field_errors": ["Login first"]}, status=status.HTTP_400_BAD_REQUEST)
+            return ClientErrorResponse("Login first", status.HTTP_400_BAD_REQUEST)
 
         user: User = get_object_or_404(User, pk=user_id)
         request.user = user
         if user.otp_secret:
-            if user.verify_otp(otp_secret):
+            if user.verify_otp(otp_code):
                 login(request, user)
                 refresh, access = user.generate_tokens()
                 response = Response({"access_token": access}, status=status.HTTP_200_OK)
@@ -74,10 +75,8 @@ class VerifyOtpView(APIView):
                     max_age=3600,
                 )
                 return response
-            return Response({"non_field_errors": ["Invalid OTP"]}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(
-            {"non_field_errors": ["Two factore authentication is required"]}, status=status.HTTP_400_BAD_REQUEST
-        )
+            return ClientErrorResponse("Two-factore authentication code is invalid", status.HTTP_401_UNAUTHORIZED)
+        return ClientErrorResponse("Two-factore authentication is required", status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(tags=["Auth"])
@@ -89,11 +88,14 @@ class EnableOtpView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         otp_session = serializer.validated_data["otp_session"]
+        regenerate = serializer.validated_data["regenerate"]
         user_id = cache.get(otp_session)
         if not user_id:
-            return Response({"non_field_errors": ["Login first"]}, status=status.HTTP_400_BAD_REQUEST)
+            return ClientErrorResponse("Login first!", status=status.HTTP_400_BAD_REQUEST)
         user: User = get_object_or_404(User, pk=user_id)
-        otp_secret = user.generate_otp_secret()
+        otp_secret = user.otp_secret
+        if user.otp_secret == "" or regenerate:
+            otp_secret = user.generate_otp_secret()
         otp_uri = user.get_otp_provisioning_uri()
         return Response({"otp_secret": otp_secret, "otp_uri": otp_uri})
 
